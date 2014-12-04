@@ -1,3 +1,0 @@
-tran_id,"date_format(date,'%Y-%m-%d')",original_identifier,patient_id,patient_id_authority,patient_id_type,client_msisdn,device_msisdn,uid_ou5,patient_dob,language,newEDD,gestational_age_weeks
-81752,2014-08-11,7012310800088^^^ZAF^NI,7002130800088,ZAF,NI,+27823123456,,pXgCfVRCA4E,1970-08-21,en,20141111,35
-81753,2014-08-11,021237247325^^^OTHER^FI,021237247325,OTHER,FI,+27719654321,,ZS8zu2cAoMD,NULL,st,20150111,25
