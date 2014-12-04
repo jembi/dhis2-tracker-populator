@@ -11,7 +11,7 @@ var HELP = [
   '\nUsage: ' + Package.name + ' [OPTIONS] URL',
   '\nOptions:',
   '  -c, --csv   Path to the directory containing the csv files',
-  '  -d, --done  Path the the directory in which to place the done files',
+  '  -d, --done  Path to the directory in which to place the done files',
   '  -f, --fail  Path to the directory in which to place the failed files',
   '',
   '  --help      Show this help',
