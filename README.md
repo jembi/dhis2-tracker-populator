@@ -3,6 +3,7 @@
 Populate [DHIS2 Tracker](https://www.dhis2.org/individual-data-records) with individual data records read from a number of CSV files.
 
 ### Install
+This is a node.js application. Refer to http://nodejs.org/ for instructions on how install nodejs and NPM for your operating system.
 
 Install the package globally using NPM.
 
@@ -39,6 +40,7 @@ Options:
   --help      Show this help
   --version   Print the version and exit
 ```
+NB: The folders specified in the options above need to be created manually
 
 The default options are:
 * csv: `./csv/`
@@ -51,3 +53,5 @@ dhis2-tracker-populator https://username:password@apps.dhis2.org/demo
 ```
 
 This will read data records from the CSV files found in the `csv` directory and make requests to the API for the given URL to populate the tracker. If an error occurs while processing a CSV file it will be moved into the `csvfail` directory, otherwise it will be moved to the `csvdone` directory on completion.
+
+Best practice is to use ./bin/split.js  to split a multi-line csv into individual files. This will give granular control and a view of exactly which files have been processed and which did not get fully added to the program.
