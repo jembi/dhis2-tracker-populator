@@ -5,7 +5,7 @@ var FS = require('fs');
 var Minimist = require('minimist');
 var Package = require('../package.json');
 var Path = require('path');
-var Populator = require('../lib/populator');
+var TrackerPopulator = require('../lib/index');
 
 var HELP = [
   '\nUsage: ' + Package.name + ' [OPTIONS] URL',
@@ -76,4 +76,4 @@ checkPath(argv.csvPath);
 checkPath(argv.donePath);
 checkPath(argv.failPath);
 
-Populator(argv);
+TrackerPopulator(argv);

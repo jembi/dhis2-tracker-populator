@@ -5,7 +5,8 @@
   "bin": "./bin/index.js",
   "preferGlobal": true,
   "scripts": {
-    "test": "lab -v"
+    "test": "lab -v",
+    "cover": "lab -r html -o coverage.html"
   },
   "dependencies": {
     "async": "^0.9.0",
@@ -16,7 +17,9 @@
     "winston": "^0.8.3"
   },
   "devDependencies": {
+    "chai": "^1.10.0",
     "lab": "^5.1.0",
-    "sinon": "^1.12.1"
+    "sinon": "^1.12.1",
+    "sinon-chai": "^2.6.0"
   }
 }
