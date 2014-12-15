@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+/**
+ * Split a multi-row CSV file into multiple single-row CSV files, keeping the header row intact.
+ */
 'use strict';
 
 var FS = require('fs');
