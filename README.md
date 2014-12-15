@@ -22,6 +22,7 @@ The CSV files must contain the following columns:
 Any number of additional attributes or data elements can be specified with column headers of the following format:
 * Attributes: The ID of the attribute prepended with the string `A|`.
 * Data elements: The ID of the data element prepended with the string `DE|`.
+* The application assumes that there is only one unique attribute per tracked entity (this is determined by the application at run time from the DHIS2 resources api) 
 
 ### Run
 
