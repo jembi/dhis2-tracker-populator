@@ -1,35 +1,25 @@
 {
-  "name": "momconnect-orchestrator-file-queue",
+  "name": "dhis2-tracker-populator",
   "version": "0.0.1",
-  "description": "MomConnect Async File Queue",
-  "main": "index.js",
-  "dependencies": {
-    "body-parser": "^1.9.0",
-    "express": "^4.9.7",
-    "favicon": "0.0.2",
-    "logger": "0.0.1",
-    "media-typer": "^0.3.0",
-    "mkdirp": "^0.5.0",
-    "moment": "^2.8.3",
-    "morgan": "^1.3.2",
-    "raw-body": "1.2.2",
-    "request": "^2.45.0",
-    "restler": "^3.2.2",
-    "serve-favicon": "^2.1.5",
-    "winston": "^0.8.1"
-  },
-  "devDependencies": {},
+  "main": "./lib/populator.js",
+  "bin": "./bin/index.js",
+  "preferGlobal": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "lab -v",
+    "cover": "lab -r html -o coverage.html"
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/jembi/momconnect-orchestrator-file-queue.git"
+  "dependencies": {
+    "async": "^0.9.0",
+    "csv-parse": "0.0.6",
+    "minimist": "^1.1.0",
+    "request": "^2.49.0",
+    "stream-transform": "0.0.6",
+    "winston": "^0.8.3"
   },
-  "author": "Duma Mtungwa",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/jembi/momconnect-orchestrator-file-queue/issues"
-  },
-  "homepage": "https://github.com/jembi/momconnect-orchestrator-file-queue"
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "lab": "^5.1.0",
+    "sinon": "^1.12.1",
+    "sinon-chai": "^2.6.0"
+  }
 }
