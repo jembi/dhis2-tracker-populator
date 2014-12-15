@@ -1,5 +1,6 @@
 'use strict';
 
+var Chai = require('chai');
 var Lab = require('lab');
 var Path = require('path');
 var Request = require('request');
@@ -16,12 +17,14 @@ var beforeEach = lab.beforeEach;
 var describe = lab.describe;
 var it = lab.it;
 
-var fixturesPath = Path.join(__dirname, 'fixtures');
+var expect = Chai.expect;
+
+var fixturePath = Path.join(__dirname, 'fixtures');
 var options = {
   url: 'http://localhost/',
-  csvPath: fixturesPath,
-  donePath: fixturesPath,
-  failPath: fixturesPath
+  csvPath: fixturePath,
+  donePath: fixturePath,
+  failPath: fixturePath
 };
 
 describe('Tracker populator', function() {
@@ -40,9 +43,10 @@ describe('Tracker populator', function() {
     next();
   });
 
-  after(function(next) {
+  afterEach(function(next) {
     TypeCache.trackedEntityAttributeTypes = {};
     TypeCache.dataElementTypes = {};
+    TypeCache.firstUniqueTrackedEntityAttributeID = null;
     next();
   });
 
@@ -58,7 +62,10 @@ describe('Tracker populator', function() {
       get.withArgs(getAttributeRequest, Sinon.match.func).yields(
         null,
         {statusCode: 200},
-        {valueType: 'string'}
+        {
+          valueType: 'string',
+          unique: true
+        }
       );
 
       // Get data elements
@@ -69,7 +76,7 @@ describe('Tracker populator', function() {
       get.withArgs(getDataElementRequest, Sinon.match.func).yields(
         null,
         {statusCode: 200},
-        {valueType: 'string'}
+        {type: 'string'}
       );
  
       // Add tracked entity
@@ -133,7 +140,15 @@ describe('Tracker populator', function() {
         }
       );
  
-      TrackerPopulator(options, next);
+      TrackerPopulator(options, function(err) {
+        if (err) {
+          return next(err);
+        }
+        expect(TypeCache.firstUniqueTrackedEntityAttributeID).to.equal('attributeID');
+        expect(TypeCache.trackedEntityAttributeTypes.attributeID).to.equal('string');
+        expect(TypeCache.dataElementTypes.dataElementID).to.equal('string');
+        next();
+      });
     });
   });
 });
