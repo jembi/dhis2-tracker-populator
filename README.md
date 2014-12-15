@@ -13,22 +13,29 @@ npm install -g dhis2-tracker-populator
 
 ### CSV file format
 
-The CSV files must follow a naming convention of `programID.programStageID.trackedEntityID.csv`. The values that make up the filename will be used when making requests to the API.
-
+The CSV files must follow a naming convention of `programID.programStageID.trackedEntityID.csv`. The values that make up the filename will be used when making requests to the API. These are the uids of the program, stage and trackedentity which can be found using api/resource calls
+e.g.
+  Program: https://apps.dhis2.org/demo/api/programs/IpHINAT79UW (shows attributes)
+  Stage: https://apps.dhis2.org/demo/api/programStages/A03MvHHogjR (shows data elements) 
+  
 The CSV files must contain the following columns:
-* `orgUnit`
-* `programDate`
-* `eventDate`
+* `orgUnit` : the uid of the organisation unit
+* `programDate` : yyyy-mm-dd
+* `eventDate` : yyyy-mm-dd
 
 Any number of additional attributes or data elements can be specified with column headers of the following format:
-* Attributes: The ID of the attribute prepended with the string `A|`.
-* Data elements: The ID of the data element prepended with the string `DE|`.
+* Attributes: The uid of the attribute prepended with the string `A|`.
+* Data elements: The uid of the data element prepended with the string `DE|`.
 * Each line in the CSV corresponds to an event.
-* If the tracked entity exists already, atrributes will not be updated
+* If the tracked entity exists already (there is a unique attribute), other atrributes will not be updated
 * If the tracked entity is already enrolled into the program, the application will continue on to adding the event
 * There is no restriction on the number of events added to a program for a particular tracked entity, and multiple identical events can be added (for example if the same csv file is operated on more than once) 
 * The application assumes that there is only one unique attribute per tracked entity (this is determined by the application at run time from the DHIS2 resources api) 
 * The csv file can be generated from a sql query to a database, from an excel spreadsheet, or any other source, as ong as it is added to the csv directory in the proper format (this must actually be comma separated)   
+
+e.g. file: IpHINAT79UW.A03MvHHogjR.cyl5vuJ5ETQ.csv
+orgUnit,programDate,eventDate,A|dv3nChNSIxy,A|hwlRTFIFSUq,DE|UXz7xuGCEhU
+sY1WN6LjmAx,2014-08-11,2014-08-11,babyfirstname,babylastname,3000
 
 ### Run
 
