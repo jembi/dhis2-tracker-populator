@@ -72,7 +72,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         post.withArgs(addTrackedEntityRequest, Sinon.match.func).yields(null, {statusCode: 500}, {});
-        populator._addTrackedEntity(OPTIONS.trackedEntityID, KNOWN_KEYS, ATTRIBUTES, function(err) {
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err) {
           expect(post).to.be.calledOnce;
           expect(err).to.exist;
           expect(err.message).to.equal('Unexpected status code 500');
@@ -85,7 +85,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         post.withArgs(addTrackedEntityRequest, Sinon.match.func).yields(null, {statusCode: 201}, '<html></html>');
-        populator._addTrackedEntity(OPTIONS.trackedEntityID, KNOWN_KEYS, ATTRIBUTES, function(err) {
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err) {
           expect(post).to.be.calledOnce;
           expect(err).to.exist;
           expect(err.message).to.equal('Could not parse response body');
@@ -108,7 +108,7 @@ describe('Populator', function() {
           }
         );
 
-        populator._addTrackedEntity(OPTIONS.trackedEntityID, KNOWN_KEYS, ATTRIBUTES, function(err) {
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err) {
           expect(post).to.be.calledOnce;
           expect(err).to.exist;
           expect(err.message).to.equal('Adding tracked entity failed');
@@ -132,7 +132,7 @@ describe('Populator', function() {
           }
         );
 
-        populator._addTrackedEntity(OPTIONS.trackedEntityID, KNOWN_KEYS, ATTRIBUTES, function(err) {
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err) {
           expect(post).to.be.calledOnce;
           expect(err).to.exist;
           expect(err.message).to.equal('Adding tracked entity failed');
@@ -155,7 +155,7 @@ describe('Populator', function() {
           }
         );
 
-        populator._addTrackedEntity(OPTIONS.trackedEntityID, KNOWN_KEYS, ATTRIBUTES, function(err) {
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err) {
           expect(post).to.be.calledOnce;
           expect(err).to.exist;
           expect(err.message).to.equal('No unique attributes found');
@@ -207,7 +207,7 @@ describe('Populator', function() {
           }
         );
 
-        populator._addTrackedEntity(OPTIONS.trackedEntityID, KNOWN_KEYS, ATTRIBUTES, function(err, trackedEntityInstanceID) {
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err, trackedEntityInstanceID) {
           expect(post).to.be.calledOnce;
           expect(get).to.be.calledOnce;
           expect(err).to.not.exist;
@@ -230,7 +230,7 @@ describe('Populator', function() {
           }
         );
 
-        populator._addTrackedEntity(OPTIONS.trackedEntityID, KNOWN_KEYS, ATTRIBUTES, function(err, trackedEntityInstanceID) {
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err, trackedEntityInstanceID) {
           expect(post).to.be.calledOnce;
           expect(err).to.not.exist;
           expect(trackedEntityInstanceID).to.equal(newTrackedEntityInstanceID);
@@ -258,7 +258,7 @@ describe('Populator', function() {
       it('should return the tracked entity instance ID', function(next) {
         post.withArgs(enrollInProgramRequest, Sinon.match.func).yields(null, {statusCode: 409}, null);
 
-        populator._enrollInProgram(OPTIONS.programID, KNOWN_KEYS, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
+        populator._enrollInProgram(KNOWN_KEYS, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
           expect(post).to.be.calledOnce;
           expect(err).to.not.exist;
           expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
@@ -272,7 +272,7 @@ describe('Populator', function() {
       it('should return an error with the correct message', function(next) {
         post.withArgs(enrollInProgramRequest, Sinon.match.func).yields(null, {statusCode: 201}, null);
 
-        populator._enrollInProgram(OPTIONS.programID, KNOWN_KEYS, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
+        populator._enrollInProgram(KNOWN_KEYS, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
           expect(post).to.be.calledOnce;
           expect(err).to.exist;
           expect(err.message).to.equal('Invalid response body');
@@ -286,7 +286,7 @@ describe('Populator', function() {
       it('should return the tracked entity instance ID', function(next) {
         post.withArgs(enrollInProgramRequest, Sinon.match.func).yields(null, {statusCode: 201}, {status: 'ERROR'});
 
-        populator._enrollInProgram(OPTIONS.programID, KNOWN_KEYS, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
+        populator._enrollInProgram(KNOWN_KEYS, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
           expect(post).to.be.calledOnce;
           expect(err).to.not.exist;
           expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
@@ -300,7 +300,7 @@ describe('Populator', function() {
       it('should return the tracked entity instance ID', function(next) {
         post.withArgs(enrollInProgramRequest, Sinon.match.func).yields(null, {statusCode: 201}, {status: 'SUCCESS'});
 
-        populator._enrollInProgram(OPTIONS.programID, KNOWN_KEYS, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
+        populator._enrollInProgram(KNOWN_KEYS, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
           expect(post).to.be.calledOnce;
           expect(err).to.not.exist;
           expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
@@ -333,7 +333,7 @@ describe('Populator', function() {
       it('should return an error with the correct message', function(next) {
         post.withArgs(addEventRequest, Sinon.match.func).yields(null, {statusCode: 500}, null);
 
-        populator._addEvent(OPTIONS.programID, OPTIONS.stageID, KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
+        populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
           expect(post).to.be.calledOnce;
           expect(err).to.exist;
           expect(err.message).to.equal('Adding event failed');
@@ -347,7 +347,7 @@ describe('Populator', function() {
       it('should return an error with the correct message', function(next) {
         post.withArgs(addEventRequest, Sinon.match.func).yields(null, {statusCode: 201}, null);
 
-        populator._addEvent(OPTIONS.programID, OPTIONS.stageID, KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
+        populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
           expect(post).to.be.calledOnce;
           expect(err).to.exist;
           expect(err.message).to.equal('Adding event failed');
@@ -369,7 +369,7 @@ describe('Populator', function() {
           }
         );
 
-        populator._addEvent(OPTIONS.programID, OPTIONS.stageID, KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
+        populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
           expect(post).to.be.calledOnce;
           expect(err).to.exist;
           expect(err.message).to.equal('Adding event failed');
@@ -391,7 +391,7 @@ describe('Populator', function() {
           }
         );
 
-        populator._addEvent(OPTIONS.programID, OPTIONS.stageID, KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
+        populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
           expect(post).to.be.calledOnce;
           expect(err).to.not.exist;
           next();
