@@ -4,6 +4,10 @@
   "main": "./lib/populator.js",
   "bin": "./bin/index.js",
   "preferGlobal": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jembi/dhis2-tracker-populator"
+  },
   "scripts": {
     "test": "lab -v",
     "cover": "lab -r html -o coverage.html"
