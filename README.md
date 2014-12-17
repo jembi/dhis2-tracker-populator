@@ -1,5 +1,7 @@
 # dhis2-tracker-populator
 
+[![Build Status](https://travis-ci.org/jembi/dhis2-tracker-populator.svg)](https://travis-ci.org/jembi/dhis2-tracker-populator)
+
 Populate [DHIS2 Tracker](https://www.dhis2.org/individual-data-records) with individual data records read from a number of CSV files.
 
 ### Install
