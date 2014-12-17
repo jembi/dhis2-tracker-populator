@@ -17,7 +17,6 @@
     "csv-parse": "0.0.6",
     "minimist": "^1.1.0",
     "request": "^2.49.0",
-    "stream-transform": "0.0.6",
     "winston": "^0.8.3"
   },
   "devDependencies": {
