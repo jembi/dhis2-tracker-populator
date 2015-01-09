@@ -90,7 +90,7 @@ describe('Tracker populator', function() {
           ])
         })
       });
-      post.withArgs(addTrackedEntityRequest, Sinon.match.func).yields(
+      post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns({}).yieldsAsync(
         null,
         {statusCode: 201},
         {
@@ -109,7 +109,7 @@ describe('Tracker populator', function() {
           dateOfIncident: '1970-01-01'
         })
       });
-      post.withArgs(enrollInProgramRequest, Sinon.match.func).yields(
+      post.withArgs(enrollInProgramRequest, Sinon.match.func).returns({}).yieldsAsync(
         null,
         {statusCode: 201},
         {status: 'SUCCESS'}
@@ -130,7 +130,7 @@ describe('Tracker populator', function() {
           ])
         })
       });
-      post.withArgs(addEventRequest, Sinon.match.func).yields(
+      post.withArgs(addEventRequest, Sinon.match.func).returns({}).yieldsAsync(
         null,
         {statusCode: 201},
         {
