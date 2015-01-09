@@ -144,6 +144,8 @@ describe('Tracker populator', function() {
         if (err) {
           return next(err);
         }
+        expect(get).to.have.callCount(2);
+        expect(post).to.have.callCount(3);
         expect(TypeCache.firstUniqueTrackedEntityAttributeID).to.equal('attributeID');
         expect(TypeCache.trackedEntityAttributeTypes.attributeID).to.equal('string');
         expect(TypeCache.dataElementTypes.dataElementID).to.equal('string');
