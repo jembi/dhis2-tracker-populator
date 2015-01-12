@@ -57,6 +57,22 @@ describe('Populator', function() {
 
   describe('#addTrackedEntity', function() {
 
+    var requestObjectBody = {
+      trackedEntity: OPTIONS.trackedEntityInstanceID,
+      orgUnit: KNOWN_KEYS.orgUnit,
+      attributes: ATTRIBUTES
+    };
+    var requestObject = {
+      method: 'POST',
+      path: '/api/trackedEntityInstances',
+      body: new Buffer(JSON.stringify(requestObjectBody))
+    };
+    var expectedRequestObject = Sinon.match({
+      method: requestObject.method,
+      path: requestObject.path,
+      body: Sinon.match(requestObjectBody)
+    });
+
     var addTrackedEntityResponseListener;
     var addTrackedEntityRequest = Sinon.match({
       url: URL.resolve(OPTIONS.url, 'api/trackedEntityInstances'),
@@ -83,15 +99,11 @@ describe('Populator', function() {
     describe('with a non-201 response status code', function() {
 
       it('should return an error with the correct message', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/trackedEntityInstances'
-        };
         var response = {statusCode: 500};
-        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(request).yieldsAsync(null, response, {});
+        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {});
         populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err) {
           expect(post).to.be.calledOnce;
-          expect(addTrackedEntityResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Unexpected status code 500');
           next();
@@ -102,15 +114,11 @@ describe('Populator', function() {
     describe('with an invalid response body', function() {
 
       it('should return an error with the correct message', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/trackedEntityInstances'
-        };
         var response = {statusCode: 201};
-        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(request).yieldsAsync(null, response, '<html></html>');
+        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, '<html></html>');
         populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err) {
           expect(post).to.be.calledOnce;
-          expect(addTrackedEntityResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Could not parse response body');
           next();
@@ -121,12 +129,8 @@ describe('Populator', function() {
     describe('with an unknown conflict', function() {
 
       it('should return an error with the correct message', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/trackedEntityInstances'
-        };
         var response = {statusCode: 201};
-        var stub = post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(request).yieldsAsync(
+        var stub = post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -139,7 +143,7 @@ describe('Populator', function() {
 
         populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err) {
           expect(post).to.be.calledOnce;
-          expect(addTrackedEntityResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Adding tracked entity failed');
           next();
@@ -150,12 +154,8 @@ describe('Populator', function() {
     describe('with more than one conflict', function() {
 
       it('should return an error with the correct message', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/trackedEntityInstances'
-        };
         var response = {statusCode: 201};
-        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(request).yieldsAsync(
+        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -169,7 +169,7 @@ describe('Populator', function() {
 
         populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err) {
           expect(post).to.be.calledOnce;
-          expect(addTrackedEntityResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Adding tracked entity failed');
           next();
@@ -180,12 +180,8 @@ describe('Populator', function() {
     describe('with a non-unique conflict and no unique attributes', function() {
 
       it('should return an error with the correct message', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/trackedEntityInstances'
-        };
         var response = {statusCode: 201};
-        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(request).yieldsAsync(
+        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -198,7 +194,7 @@ describe('Populator', function() {
 
         populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err) {
           expect(post).to.be.calledOnce;
-          expect(addTrackedEntityResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('No unique attributes found');
           next();
@@ -223,12 +219,8 @@ describe('Populator', function() {
 
       it('should return the existing tracked entity instance ID', function(next) {
         var existingTrackedEntityInstanceID = 'existing tracked entity instance id';
-        var request = {
-          method: 'POST',
-          path: '/api/trackedEntityInstances'
-        };
         var response = {statusCode: 201};
-        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(request).yieldsAsync(
+        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -244,7 +236,7 @@ describe('Populator', function() {
               '&attribute=' + uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]),
           json: true
         });
-        get.withArgs(getTrackedEntityInstanceRequest, Sinon.match.func).returns(request).yieldsAsync(
+        get.withArgs(getTrackedEntityInstanceRequest, Sinon.match.func).yieldsAsync(
           null,
           {},
           {
@@ -257,7 +249,7 @@ describe('Populator', function() {
         populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err, trackedEntityInstanceID) {
           expect(post).to.be.calledOnce;
           expect(get).to.be.calledOnce;
-          expect(addTrackedEntityResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
           expect(trackedEntityInstanceID).to.equal(existingTrackedEntityInstanceID);
           next();
@@ -269,12 +261,8 @@ describe('Populator', function() {
 
       it('should should return the new tracked entity instance ID', function(next) {
         var newTrackedEntityInstanceID = 'new tracked entity instance id';
-        var request = {
-          method: 'POST',
-          path: '/api/trackedEntityInstances'
-        };
         var response = {statusCode: 201};
-        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(request).yieldsAsync(
+        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -285,7 +273,7 @@ describe('Populator', function() {
 
         populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function(err, trackedEntityInstanceID) {
           expect(post).to.be.calledOnce;
-          expect(addTrackedEntityResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
           expect(trackedEntityInstanceID).to.equal(newTrackedEntityInstanceID);
           next();
@@ -297,15 +285,27 @@ describe('Populator', function() {
   describe('#enrollInProgram', function() {
     var trackedEntityInstanceID = 'some tracked entity instance id';
 
+    var requestBody = {
+      program: OPTIONS.programID,
+      trackedEntityInstance: trackedEntityInstanceID,
+      dateOfEnrollment: KNOWN_KEYS.programDate,
+      dateOfIncident: KNOWN_KEYS.programDate
+    };
+    var requestObject = {
+      method: 'POST',
+      path: '/api/enrollments',
+      body: new Buffer(JSON.stringify(requestBody))
+    };
+    var expectedRequestObject = Sinon.match({
+      method: requestObject.method,
+      path: requestObject.path,
+      body: Sinon.match(requestBody)
+    });
+
     var enrollInProgramResponseListener;
     var enrollInProgramRequest = Sinon.match({
       url: URL.resolve(OPTIONS.url, 'api/enrollments'),
-      json: Sinon.match({
-        program: OPTIONS.programID,
-        trackedEntityInstance: trackedEntityInstanceID,
-        dateOfEnrollment: KNOWN_KEYS.programDate,
-        dateOfIncident: KNOWN_KEYS.programDate
-      })
+      json: Sinon.match(requestBody)
     });
 
     beforeEach(function(next) {
@@ -322,16 +322,12 @@ describe('Populator', function() {
     describe('with a 409 response status code', function() {
 
       it('should return the tracked entity instance ID', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/enrollments'
-        };
         var response = {statusCode: 409};
-        post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(request).yieldsAsync(null, response, null);
+        post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
         populator._enrollInProgram(KNOWN_KEYS, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
           expect(post).to.be.calledOnce;
-          expect(enrollInProgramResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(enrollInProgramResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
           expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
           next();
@@ -342,16 +338,12 @@ describe('Populator', function() {
     describe('with an invalid response body', function() {
 
       it('should return an error with the correct message', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/enrollments'
-        };
         var response = {statusCode: 201};
-        post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(request).yieldsAsync(null, response, null);
+        post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
         populator._enrollInProgram(KNOWN_KEYS, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
           expect(post).to.be.calledOnce;
-          expect(enrollInProgramResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(enrollInProgramResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Invalid response body');
           next();
@@ -362,16 +354,12 @@ describe('Populator', function() {
     describe('with an unsuccessful response body', function() {
 
       it('should return the tracked entity instance ID', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/enrollments'
-        };
         var response = {statusCode: 201};
-        post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(request).yieldsAsync(null, response, {status: 'ERROR'});
+        post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {status: 'ERROR'});
 
         populator._enrollInProgram(KNOWN_KEYS, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
           expect(post).to.be.calledOnce;
-          expect(enrollInProgramResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(enrollInProgramResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
           expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
           next();
@@ -382,16 +370,12 @@ describe('Populator', function() {
     describe('with a successful response body', function() {
 
       it('should return the tracked entity instance ID', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/enrollments'
-        };
         var response = {statusCode: 201};
-        post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(request).yieldsAsync(null, response, {status: 'SUCCESS'});
+        post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {status: 'SUCCESS'});
 
         populator._enrollInProgram(KNOWN_KEYS, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
           expect(post).to.be.calledOnce;
-          expect(enrollInProgramResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(enrollInProgramResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
           expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
           next();
@@ -402,6 +386,26 @@ describe('Populator', function() {
 
   describe('#addEvent', function() {
     var trackedEntityInstanceID = 'some tracked entity instance id';
+
+    var requestObjectBody = {
+      program: OPTIONS.programID,
+      programStage: OPTIONS.stageID,
+      trackedEntityInstance: trackedEntityInstanceID,
+      orgUnit: KNOWN_KEYS.orgUnit,
+      storedBy: 'admin',
+      eventDate: KNOWN_KEYS.eventDate,
+      dataValues: DATA_ELEMENTS
+    };
+    var requestObject = {
+      method: 'POST',
+      path: '/api/events',
+      body: new Buffer(JSON.stringify(requestObjectBody))
+    };
+    var expectedRequestObject = Sinon.match({
+      method: requestObject.method,
+      path: requestObject.path,
+      body: Sinon.match(requestObjectBody)
+    });
 
     var addEventResponseListener;
     var addEventRequest = Sinon.match({
@@ -433,16 +437,12 @@ describe('Populator', function() {
     describe('with a non-20x response code', function() {
 
       it('should return an error with the correct message', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/events'
-        };
         var response = {statusCode: 500};
-        post.withArgs(addEventRequest, Sinon.match.func).returns(request).yieldsAsync(null, response, null);
+        post.withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
         populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
           expect(post).to.be.calledOnce;
-          expect(addEventResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Adding event failed');
           next();
@@ -453,16 +453,12 @@ describe('Populator', function() {
     describe('with no response body', function() {
 
       it('should return an error with the correct message', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/events'
-        };
         var response = {statusCode: 201};
-        post.withArgs(addEventRequest, Sinon.match.func).returns(request).yieldsAsync(null, response, null);
+        post.withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
         populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
           expect(post).to.be.calledOnce;
-          expect(addEventResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Adding event failed');
           next();
@@ -473,12 +469,8 @@ describe('Populator', function() {
     describe('with an unsuccessful response body', function() {
 
       it('should return an error with the correct message', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/events'
-        };
         var response = {statusCode: 201};
-        post.withArgs(addEventRequest, Sinon.match.func).returns(request).yieldsAsync(
+        post.withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -490,7 +482,7 @@ describe('Populator', function() {
 
         populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
           expect(post).to.be.calledOnce;
-          expect(addEventResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Adding event failed');
           next();
@@ -501,12 +493,8 @@ describe('Populator', function() {
     describe('with a successful response body', function() {
 
       it('should not return an error', function(next) {
-        var request = {
-          method: 'POST',
-          path: '/api/events'
-        };
         var response = {statusCode: 201};
-        post.withArgs(addEventRequest, Sinon.match.func).returns(request).yieldsAsync(
+        post.withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -518,7 +506,7 @@ describe('Populator', function() {
 
         populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
           expect(post).to.be.calledOnce;
-          expect(addEventResponseListener).to.be.calledWith(response, Sinon.match(request));
+          expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
           next();
         });

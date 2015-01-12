@@ -32,6 +32,10 @@ describe('Tracker populator', function() {
   var get;
   var post;
 
+  var requestObject = {
+    body: new Buffer('{}')
+  };
+
   beforeEach(function(next) {
     get = sandbox.stub(Request, 'get');
     post = sandbox.stub(Request, 'post');
@@ -90,7 +94,7 @@ describe('Tracker populator', function() {
           ])
         })
       });
-      post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns({}).yieldsAsync(
+      post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
         null,
         {statusCode: 201},
         {
@@ -109,7 +113,7 @@ describe('Tracker populator', function() {
           dateOfIncident: '1970-01-01'
         })
       });
-      post.withArgs(enrollInProgramRequest, Sinon.match.func).returns({}).yieldsAsync(
+      post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
         null,
         {statusCode: 201},
         {status: 'SUCCESS'}
@@ -130,7 +134,7 @@ describe('Tracker populator', function() {
           ])
         })
       });
-      post.withArgs(addEventRequest, Sinon.match.func).returns({}).yieldsAsync(
+      post.withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
         null,
         {statusCode: 201},
         {
