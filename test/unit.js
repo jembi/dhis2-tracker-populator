@@ -70,7 +70,8 @@ describe('Populator', function() {
     var expectedRequestObject = Sinon.match({
       method: requestObject.method,
       path: requestObject.path,
-      body: Sinon.match(requestObjectBody)
+      body: Sinon.match(requestObjectBody),
+      timestamp: Sinon.match.number
     });
 
     var addTrackedEntityResponseListener;
@@ -299,7 +300,8 @@ describe('Populator', function() {
     var expectedRequestObject = Sinon.match({
       method: requestObject.method,
       path: requestObject.path,
-      body: Sinon.match(requestBody)
+      body: Sinon.match(requestBody),
+      timestamp: Sinon.match.number
     });
 
     var enrollInProgramResponseListener;
@@ -404,7 +406,8 @@ describe('Populator', function() {
     var expectedRequestObject = Sinon.match({
       method: requestObject.method,
       path: requestObject.path,
-      body: Sinon.match(requestObjectBody)
+      body: Sinon.match(requestObjectBody),
+      timestamp: Sinon.match.number
     });
 
     var addEventResponseListener;
