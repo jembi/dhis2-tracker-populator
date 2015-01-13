@@ -27,7 +27,8 @@ describe('Populator', function() {
     url: 'http://localhost/',
     programID: 'some program id',
     stageID: 'some stage id',
-    trackedEntityID: 'some tracked entity id'
+    trackedEntityID: 'some tracked entity id',
+    duplicateThreshold: 0
   };
   var KNOWN_KEYS = {
     orgUnit: 'some org unit',
@@ -44,9 +45,11 @@ describe('Populator', function() {
   var sandbox = Sinon.sandbox.create();
   var populator = new Populator(OPTIONS);
   var post;
+  var get;
 
   beforeEach(function(next) {
-    post = sandbox.stub(Request, 'post');
+    post = sandbox.stub(Request, 'post').yields(new Error('Unexpected invocation'));
+    get = sandbox.stub(Request, 'get').yields(new Error('Unexpected invocation'));
     next();
   });
 
@@ -204,11 +207,9 @@ describe('Populator', function() {
     });
 
     describe('with a non-unique conflict and at least one unique attribute', function() {
-      var get;
       var uniqueAttributeID = Object.keys(ATTRIBUTES)[0];
 
       before(function(next) {
-        get = sandbox.stub(Request, 'get');
         TypeCache.firstUniqueTrackedEntityAttributeID = uniqueAttributeID;
         next();
       });
@@ -511,6 +512,76 @@ describe('Populator', function() {
           expect(post).to.be.calledOnce;
           expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
+          next();
+        });
+      });
+    });
+  });
+
+  describe('#checkForDuplicateEvent', function() {
+    var trackedEntityInstanceID = 'some tracked entity instance id';
+
+    var checkForDuplicateEventRequest = Sinon.match({
+      url: URL.resolve(OPTIONS.url, 'api/events'),
+      qs: Sinon.match({
+        program: OPTIONS.programID,
+        programStage: OPTIONS.stageID,
+        trackedEntityInstance: trackedEntityInstanceID,
+        orgUnit: KNOWN_KEYS.orgUnit,
+        startDate: '1970-01-01'
+      }),
+      json: true
+    });
+
+    describe('with a non-200 response code', function() {
+
+      it('should return an error with the correct message', function(next) {
+        get.withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
+          null,
+          {statusCode: 500}
+        );
+
+        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function(err) {
+          expect(get).to.be.calledOnce;
+          expect(err).to.exist;
+          expect(err.message).to.equal('Unexpected status code 500');
+          next();
+        });
+      });
+    });
+
+    describe('with no duplicate events', function() {
+
+      it('should not return an error', function(next) {
+        get.withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
+          null,
+          {statusCode: 200},
+          {events: []}
+        );
+
+        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function(err) {
+          expect(get).to.be.calledOnce;
+          expect(err).to.not.exist;
+          next();
+        });
+      });
+    });
+
+    describe('with at least one duplicate event', function() {
+
+      it('should return an error with the correct message', function(next) {
+        get.withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
+          null,
+          {statusCode: 200},
+          {events: [
+            {eventDate: Date.now()}
+          ]}
+        );
+
+        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function(err) {
+          expect(get).to.be.calledOnce;
+          expect(err).to.exist;
+          expect(err.message).to.equal('Duplicate event');
           next();
         });
       });

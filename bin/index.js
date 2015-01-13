@@ -10,9 +10,10 @@ var TrackerPopulator = require('../lib/index');
 var HELP = [
   '\nUsage: ' + Package.name + ' [OPTIONS] URL',
   '\nOptions:',
-  '  -c, --csv   Path to the directory containing the csv files',
-  '  -d, --done  Path to the directory in which to place the done files',
-  '  -f, --fail  Path to the directory in which to place the failed files',
+  '  -c, --csv        Path to the directory containing the csv files',
+  '  -d, --done       Path to the directory in which to place the done files',
+  '  -f, --fail       Path to the directory in which to place the failed files',
+  '  -t, --threshold  The minimum number of days between duplicate events',
   '',
   '  --help      Show this help',
   '  --version   Print the version and exit'
@@ -43,13 +44,15 @@ var argumentOptions = {
   alias: {
     csvPath: ['csv', 'c'],
     donePath: ['done', 'd'],
-    failPath: ['fail', 'f']
+    failPath: ['fail', 'f'],
+    threshold: ['t']
   },
   default: {
     csvPath: 'csv',
     donePath: 'csvdone',
     failPath: 'csvfail',
-    debug: false
+    debug: false,
+    threshold: -1
   }
 };
 

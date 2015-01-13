@@ -24,7 +24,8 @@ var options = {
   url: 'http://localhost/',
   csvPath: fixturePath,
   donePath: fixturePath,
-  failPath: fixturePath
+  failPath: fixturePath,
+  threshold: 1
 };
 
 describe('Tracker populator', function() {
@@ -37,8 +38,8 @@ describe('Tracker populator', function() {
   };
 
   beforeEach(function(next) {
-    get = sandbox.stub(Request, 'get');
-    post = sandbox.stub(Request, 'post');
+    get = sandbox.stub(Request, 'get').yields(new Error('Unexpected invocation'));
+    post = sandbox.stub(Request, 'post').yields(new Error('Unexpected invocation'));
     next();
   });
 
@@ -118,6 +119,24 @@ describe('Tracker populator', function() {
         {statusCode: 201},
         {status: 'SUCCESS'}
       );
+
+      // Check for duplicate events
+      var checkForDuplicateEventRequest = Sinon.match({
+        url: URL.resolve(options.url, 'api/events'),
+        qs: Sinon.match({
+          orgUnit: 'expectedOrgUnit',
+          program: 'programID',
+          programStage: 'stageID',
+          trackedEntityInstance: trackedEntityInstanceID,
+          startDate: '1970-01-01'
+        }),
+        json: true
+      });
+      get.withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
+        null,
+        {statusCode: 200},
+        {events: []}
+      );
  
       // Add event
       var addEventRequest = Sinon.match({
@@ -148,7 +167,7 @@ describe('Tracker populator', function() {
         if (err) {
           return next(err);
         }
-        expect(get).to.have.callCount(2);
+        expect(get).to.have.callCount(3);
         expect(post).to.have.callCount(3);
         expect(TypeCache.firstUniqueTrackedEntityAttributeID).to.equal('attributeID');
         expect(TypeCache.trackedEntityAttributeTypes.attributeID).to.equal('string');

@@ -50,19 +50,23 @@ Run the populator from the command line.
 Usage: dhis2-tracker-populator [OPTIONS] URL
 
 Options:
-  -c, --csv   Path to the directory containing the csv files
-  -d, --done  Path to the directory in which to place the done files
-  -f, --fail  Path to the directory in which to place the failed files
+  -c, --csv        Path to the directory containing the csv files
+  -d, --done       Path to the directory in which to place the done files
+  -f, --fail       Path to the directory in which to place the failed files
+  -t, --threshold  The minimum number of days between duplicate events
 
   --help      Show this help
   --version   Print the version and exit
 ```
 NB: The folders specified in the options above need to be created manually
 
+The `threshold` option specifies the number of days between events for the same program, stage and tracked entity instance which will cause them to be considered duplicates. For example, if set to `0` events on the same day will be considered duplicates. The default value of `-1` disables duplicate checking.
+
 The default options are:
 * csv: `./csv/`
 * done: `./csvdone/`
 * fail: `./csvfail/`
+* threshold: `-1`
 
 Example:
 ```bash
