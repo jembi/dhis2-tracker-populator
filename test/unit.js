@@ -585,8 +585,11 @@ describe('Populator', function() {
         var existingTrackedEntityInstanceID = 'existing tracked entity instance id';
 
         var getTrackedEntityInstanceRequest = Sinon.match({
-          url: URL.resolve(OPTIONS.url, 'api/trackedEntityInstances?ou=' + KNOWN_KEYS.orgUnit +
-              '&attribute=' + uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]),
+          url: URL.resolve(OPTIONS.url, 'api/trackedEntityInstances'),
+          qs: Sinon.match({
+            ou: KNOWN_KEYS.orgUnit,
+            attribute: uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]
+          }),
           json: true
         });
         requestMock.expects('get').once().withExactArgs(getTrackedEntityInstanceRequest, Sinon.match.func).yieldsAsync(
