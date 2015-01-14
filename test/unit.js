@@ -106,7 +106,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 500};
-        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {});
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {});
         populator._addTrackedEntity(function(err) {
           requestMock.verify();
           expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
@@ -121,7 +121,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, '<html></html>');
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, '<html></html>');
         populator._addTrackedEntity(function(err) {
           requestMock.verify();
           expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
@@ -136,7 +136,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -161,7 +161,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -187,7 +187,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -224,7 +224,7 @@ describe('Populator', function() {
       it('should return the existing tracked entity instance ID', function(next) {
         var existingTrackedEntityInstanceID = 'existing tracked entity instance id';
         var response = {statusCode: 201};
-        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -240,7 +240,7 @@ describe('Populator', function() {
               '&attribute=' + uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]),
           json: true
         });
-        requestMock.expects('get').once().withArgs(getTrackedEntityInstanceRequest, Sinon.match.func).yieldsAsync(
+        requestMock.expects('get').once().withExactArgs(getTrackedEntityInstanceRequest, Sinon.match.func).yieldsAsync(
           null,
           {},
           {
@@ -265,7 +265,7 @@ describe('Populator', function() {
       it('should should return the new tracked entity instance ID', function(next) {
         var newTrackedEntityInstanceID = 'new tracked entity instance id';
         var response = {statusCode: 201};
-        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -327,7 +327,7 @@ describe('Populator', function() {
 
       it('should return the tracked entity instance ID', function(next) {
         var response = {statusCode: 409};
-        requestMock.expects('post').once().withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
+        requestMock.expects('post').once().withExactArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
         populator._enrollInProgram(trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
           requestMock.verify();
@@ -343,7 +343,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        requestMock.expects('post').once().withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
+        requestMock.expects('post').once().withExactArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
         populator._enrollInProgram(trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
           requestMock.verify();
@@ -359,7 +359,7 @@ describe('Populator', function() {
 
       it('should return the tracked entity instance ID', function(next) {
         var response = {statusCode: 201};
-        requestMock.expects('post').once().withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {status: 'ERROR'});
+        requestMock.expects('post').once().withExactArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {status: 'ERROR'});
 
         populator._enrollInProgram(trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
           requestMock.verify();
@@ -375,7 +375,7 @@ describe('Populator', function() {
 
       it('should return the tracked entity instance ID', function(next) {
         var response = {statusCode: 201};
-        requestMock.expects('post').once().withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {status: 'SUCCESS'});
+        requestMock.expects('post').once().withExactArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {status: 'SUCCESS'});
 
         populator._enrollInProgram(trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
           requestMock.verify();
@@ -443,7 +443,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 500};
-        requestMock.expects('post').once().withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
+        requestMock.expects('post').once().withExactArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
         populator._addEvent(trackedEntityInstanceID, function(err) {
           requestMock.verify();
@@ -459,7 +459,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        requestMock.expects('post').once().withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
+        requestMock.expects('post').once().withExactArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
         populator._addEvent(trackedEntityInstanceID, function(err) {
           requestMock.verify();
@@ -475,7 +475,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        requestMock.expects('post').once().withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withExactArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -499,7 +499,7 @@ describe('Populator', function() {
 
       it('should not return an error', function(next) {
         var response = {statusCode: 201};
-        requestMock.expects('post').once().withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withExactArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -537,7 +537,7 @@ describe('Populator', function() {
     describe('with a non-200 response code', function() {
 
       it('should return an error with the correct message', function(next) {
-        requestMock.expects('get').once().withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
+        requestMock.expects('get').once().withExactArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
           null,
           {statusCode: 500}
         );
@@ -554,7 +554,7 @@ describe('Populator', function() {
     describe('with no duplicate events', function() {
 
       it('should not return an error', function(next) {
-        requestMock.expects('get').once().withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
+        requestMock.expects('get').once().withExactArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
           null,
           {statusCode: 200},
           {events: []}
@@ -571,7 +571,7 @@ describe('Populator', function() {
     describe('with at least one duplicate event', function() {
 
       it('should return an error with the correct message', function(next) {
-        requestMock.expects('get').once().withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
+        requestMock.expects('get').once().withExactArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
           null,
           {statusCode: 200},
           {events: [
