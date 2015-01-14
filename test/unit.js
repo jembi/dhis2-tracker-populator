@@ -183,9 +183,19 @@ describe('Populator', function() {
       });
     });
 
-    describe('with a non-unique conflict and no unique attributes', function() {
+    describe('with a non-unique conflict', function() {
+      var populatorMock;
 
-      it('should return an error with the correct message', function(next) {
+      beforeEach(function(next) {
+        populatorMock = sandbox.mock(populator);
+        next();
+      });
+
+      it('should get the tracked entity instance id and update it', function(next) {
+        var trackedEntityInstanceID = 'some tracked entity instance id';
+        populatorMock.expects('_getTrackedEntityInstanceID').once().withExactArgs(Sinon.match.func).yieldsAsync(null, trackedEntityInstanceID);
+        populatorMock.expects('_updateTrackedEntityInstance').once().withExactArgs(trackedEntityInstanceID, Sinon.match.func).yieldsAsync(null, trackedEntityInstanceID);
+
         var response = {statusCode: 201};
         requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
@@ -198,63 +208,12 @@ describe('Populator', function() {
           }
         );
 
-        populator._addTrackedEntity(function(err) {
+        populator._addTrackedEntity(function(err, returnedTrackedEntityInstanceID) {
           requestMock.verify();
-          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
-          expect(err).to.exist;
-          expect(err.message).to.equal('No unique attributes found');
-          next();
-        });
-      });
-    });
-
-    describe('with a non-unique conflict and at least one unique attribute', function() {
-      var uniqueAttributeID = Object.keys(ATTRIBUTES)[0];
-
-      before(function(next) {
-        TypeCache.firstUniqueTrackedEntityAttributeID = uniqueAttributeID;
-        next();
-      });
-
-      after(function(next) {
-        TypeCache.firstUniqueTrackedEntityAttributeID = null;
-        next();
-      });
-
-      it('should return the existing tracked entity instance ID', function(next) {
-        var existingTrackedEntityInstanceID = 'existing tracked entity instance id';
-        var response = {statusCode: 201};
-        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
-          null,
-          response,
-          {
-            status: 'ERROR',
-            conflicts: [
-              {value: 'Non-unique'}
-            ]
-          }
-        );
-
-        var getTrackedEntityInstanceRequest = Sinon.match({
-          url: URL.resolve(OPTIONS.url, 'api/trackedEntityInstances?ou=' + KNOWN_KEYS.orgUnit +
-              '&attribute=' + uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]),
-          json: true
-        });
-        requestMock.expects('get').once().withExactArgs(getTrackedEntityInstanceRequest, Sinon.match.func).yieldsAsync(
-          null,
-          {},
-          {
-            rows: [
-              [existingTrackedEntityInstanceID]
-            ]
-          }
-        );
-
-        populator._addTrackedEntity(function(err, trackedEntityInstanceID) {
-          requestMock.verify();
+          populatorMock.verify();
           expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
-          expect(trackedEntityInstanceID).to.equal(existingTrackedEntityInstanceID);
+          expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
           next();
         });
       });
@@ -574,15 +533,179 @@ describe('Populator', function() {
         requestMock.expects('get').once().withExactArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
           null,
           {statusCode: 200},
-          {events: [
-            {eventDate: Date.now()}
-          ]}
+          {
+            events: [
+              {eventDate: Date.now()}
+            ]
+          }
         );
 
         populator._checkForDuplicateEvent(trackedEntityInstanceID, function(err) {
           requestMock.verify();
           expect(err).to.exist;
           expect(err.message).to.equal('Duplicate event');
+          next();
+        });
+      });
+    });
+  });
+
+  describe('#getTrackedEntityInstanceID', function() {
+
+    describe('with no unique attributes', function() {
+
+      before(function(next) {
+        TypeCache.firstUniqueTrackedEntityAttributeID = null;
+        next();
+      });
+
+      it('should return an error with the correct message', function(next) {
+        populator._getTrackedEntityInstanceID(function(err) {
+          expect(err).to.exist;
+          expect(err.message).to.equal('No unique attributes found');
+          next();
+        });
+      });
+    });
+
+    describe('with at least one unique attribute', function() {
+      var uniqueAttributeID = Object.keys(ATTRIBUTES)[0];
+
+      before(function(next) {
+        TypeCache.firstUniqueTrackedEntityAttributeID = uniqueAttributeID;
+        next();
+      });
+
+      after(function(next) {
+        TypeCache.firstUniqueTrackedEntityAttributeID = null;
+        next();
+      });
+
+      it('should return the existing tracked entity instance ID', function(next) {
+        var existingTrackedEntityInstanceID = 'existing tracked entity instance id';
+
+        var getTrackedEntityInstanceRequest = Sinon.match({
+          url: URL.resolve(OPTIONS.url, 'api/trackedEntityInstances?ou=' + KNOWN_KEYS.orgUnit +
+              '&attribute=' + uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]),
+          json: true
+        });
+        requestMock.expects('get').once().withExactArgs(getTrackedEntityInstanceRequest, Sinon.match.func).yieldsAsync(
+          null,
+          {},
+          {
+            rows: [
+              [existingTrackedEntityInstanceID]
+            ]
+          }
+        );
+
+        populator._getTrackedEntityInstanceID(function(err, trackedEntityInstanceID) {
+          requestMock.verify();
+          expect(err).to.not.exist;
+          expect(trackedEntityInstanceID).to.equal(existingTrackedEntityInstanceID);
+          next();
+        });
+      });
+    });
+  });
+
+  describe('#updateTrackedEntityInstance', function() {
+    var trackedEntityInstanceID = 'some tracked entity instance id';
+
+    var requestObjectBody = {
+      trackedEntity: OPTIONS.trackedEntityInstanceID,
+      orgUnit: KNOWN_KEYS.orgUnit,
+      attributes: ATTRIBUTES
+    };
+    var requestObject = {
+      method: 'PUT',
+      path: '/api/trackedEntityInstances/' + trackedEntityInstanceID,
+      body: new Buffer(JSON.stringify(requestObjectBody))
+    };
+    var expectedRequestObject = Sinon.match({
+      method: requestObject.method,
+      path: requestObject.path,
+      body: Sinon.match(requestObjectBody),
+      timestamp: Sinon.match.number
+    });
+
+    var updateTrackedEntityInstanceResponseListener;
+    var updateTrackedEntityInstanceRequest = Sinon.match({
+      url: URL.resolve(OPTIONS.url, 'api/trackedEntityInstances/' + trackedEntityInstanceID),
+      json: Sinon.match({
+        trackedEntity: OPTIONS.trackedEntityID,
+        orgUnit: KNOWN_KEYS.orgUnit,
+        attributes: Sinon.match(Object.keys(ATTRIBUTES).map(function(key) {
+          return Sinon.match({attribute: key, value: ATTRIBUTES[key]});
+        }))
+      })
+    });
+
+    beforeEach(function(next) {
+      updateTrackedEntityInstanceResponseListener = sandbox.stub();
+      populator.on('updateTrackedEntityInstanceResponse', updateTrackedEntityInstanceResponseListener);
+      next();
+    });
+
+    afterEach(function(next) {
+      populator.removeListener('updateTrackedEntityInstanceResponse', updateTrackedEntityInstanceResponseListener);
+      next();
+    });
+
+    describe('with a non-200 response code', function() {
+
+      it('should return an error with the correct message', function(next) {
+        var response = {statusCode: 500};
+        requestMock.expects('put').once().withExactArgs(updateTrackedEntityInstanceRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+          null,
+          response
+        );
+
+        populator._updateTrackedEntityInstance(trackedEntityInstanceID, function(err) {
+          requestMock.verify();
+          expect(updateTrackedEntityInstanceResponseListener).to.be.calledWith(response, expectedRequestObject);
+          expect(err).to.exist;
+          expect(err.message).to.equal('Unexpected status code 500');
+          next();
+        });
+      });
+    });
+
+    describe('should return an error with the correct message', function() {
+
+      it('should return the tracked entity instance id', function(next) {
+        var response = {statusCode: 200};
+        requestMock.expects('put').once().withExactArgs(updateTrackedEntityInstanceRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+          null,
+          response,
+          {status: 'ERROR'}
+        );
+
+        populator._updateTrackedEntityInstance(trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
+          requestMock.verify();
+          expect(updateTrackedEntityInstanceResponseListener).to.be.calledWith(response, expectedRequestObject);
+          expect(err).to.exist;
+          expect(err.message).to.equal('Updating tracked entity failed');
+          next();
+        });
+      });
+    });
+
+    describe('with a successful response body', function() {
+
+      it('should return the tracked entity instance id', function(next) {
+        var response = {statusCode: 200};
+        requestMock.expects('put').once().withExactArgs(updateTrackedEntityInstanceRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+          null,
+          response,
+          {status: 'SUCCESS'}
+        );
+
+        populator._updateTrackedEntityInstance(trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
+          requestMock.verify();
+          expect(updateTrackedEntityInstanceResponseListener).to.be.calledWith(response, expectedRequestObject);
+          expect(err).to.not.exist;
+          expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
           next();
         });
       });
