@@ -48,12 +48,10 @@ describe('Populator', function() {
   populator.dataElements = DATA_ELEMENTS;
 
   var sandbox = Sinon.sandbox.create();
-  var post;
-  var get;
+  var requestMock;
 
   beforeEach(function(next) {
-    post = sandbox.stub(Request, 'post').yields(new Error('Unexpected invocation'));
-    get = sandbox.stub(Request, 'get').yields(new Error('Unexpected invocation'));
+    requestMock = sandbox.mock(Request);
     next();
   });
 
@@ -108,9 +106,9 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 500};
-        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {});
+        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {});
         populator._addTrackedEntity(function(err) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Unexpected status code 500');
@@ -123,9 +121,9 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, '<html></html>');
+        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, '<html></html>');
         populator._addTrackedEntity(function(err) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Could not parse response body');
@@ -138,7 +136,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        var stub = post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -150,7 +148,7 @@ describe('Populator', function() {
         );
 
         populator._addTrackedEntity(function(err) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Adding tracked entity failed');
@@ -163,7 +161,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -176,7 +174,7 @@ describe('Populator', function() {
         );
 
         populator._addTrackedEntity(function(err) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Adding tracked entity failed');
@@ -189,7 +187,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -201,7 +199,7 @@ describe('Populator', function() {
         );
 
         populator._addTrackedEntity(function(err) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('No unique attributes found');
@@ -226,7 +224,7 @@ describe('Populator', function() {
       it('should return the existing tracked entity instance ID', function(next) {
         var existingTrackedEntityInstanceID = 'existing tracked entity instance id';
         var response = {statusCode: 201};
-        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -242,7 +240,7 @@ describe('Populator', function() {
               '&attribute=' + uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]),
           json: true
         });
-        get.withArgs(getTrackedEntityInstanceRequest, Sinon.match.func).yieldsAsync(
+        requestMock.expects('get').once().withArgs(getTrackedEntityInstanceRequest, Sinon.match.func).yieldsAsync(
           null,
           {},
           {
@@ -253,8 +251,7 @@ describe('Populator', function() {
         );
 
         populator._addTrackedEntity(function(err, trackedEntityInstanceID) {
-          expect(post).to.be.calledOnce;
-          expect(get).to.be.calledOnce;
+          requestMock.verify();
           expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
           expect(trackedEntityInstanceID).to.equal(existingTrackedEntityInstanceID);
@@ -268,7 +265,7 @@ describe('Populator', function() {
       it('should should return the new tracked entity instance ID', function(next) {
         var newTrackedEntityInstanceID = 'new tracked entity instance id';
         var response = {statusCode: 201};
-        post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -278,7 +275,7 @@ describe('Populator', function() {
         );
 
         populator._addTrackedEntity(function(err, trackedEntityInstanceID) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
           expect(trackedEntityInstanceID).to.equal(newTrackedEntityInstanceID);
@@ -330,10 +327,10 @@ describe('Populator', function() {
 
       it('should return the tracked entity instance ID', function(next) {
         var response = {statusCode: 409};
-        post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
+        requestMock.expects('post').once().withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
         populator._enrollInProgram(trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(enrollInProgramResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
           expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
@@ -346,10 +343,10 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
+        requestMock.expects('post').once().withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
         populator._enrollInProgram(trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(enrollInProgramResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Invalid response body');
@@ -362,10 +359,10 @@ describe('Populator', function() {
 
       it('should return the tracked entity instance ID', function(next) {
         var response = {statusCode: 201};
-        post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {status: 'ERROR'});
+        requestMock.expects('post').once().withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {status: 'ERROR'});
 
         populator._enrollInProgram(trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(enrollInProgramResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
           expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
@@ -378,10 +375,10 @@ describe('Populator', function() {
 
       it('should return the tracked entity instance ID', function(next) {
         var response = {statusCode: 201};
-        post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {status: 'SUCCESS'});
+        requestMock.expects('post').once().withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {status: 'SUCCESS'});
 
         populator._enrollInProgram(trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(enrollInProgramResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
           expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
@@ -446,10 +443,10 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 500};
-        post.withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
+        requestMock.expects('post').once().withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
         populator._addEvent(trackedEntityInstanceID, function(err) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Adding event failed');
@@ -462,10 +459,10 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        post.withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
+        requestMock.expects('post').once().withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
         populator._addEvent(trackedEntityInstanceID, function(err) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Adding event failed');
@@ -478,7 +475,7 @@ describe('Populator', function() {
 
       it('should return an error with the correct message', function(next) {
         var response = {statusCode: 201};
-        post.withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -489,7 +486,7 @@ describe('Populator', function() {
         );
 
         populator._addEvent(trackedEntityInstanceID, function(err) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
           expect(err.message).to.equal('Adding event failed');
@@ -502,7 +499,7 @@ describe('Populator', function() {
 
       it('should not return an error', function(next) {
         var response = {statusCode: 201};
-        post.withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+        requestMock.expects('post').once().withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
           {
@@ -513,7 +510,7 @@ describe('Populator', function() {
         );
 
         populator._addEvent(trackedEntityInstanceID, function(err) {
-          expect(post).to.be.calledOnce;
+          requestMock.verify();
           expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
           next();
@@ -540,13 +537,13 @@ describe('Populator', function() {
     describe('with a non-200 response code', function() {
 
       it('should return an error with the correct message', function(next) {
-        get.withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
+        requestMock.expects('get').once().withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
           null,
           {statusCode: 500}
         );
 
         populator._checkForDuplicateEvent(trackedEntityInstanceID, function(err) {
-          expect(get).to.be.calledOnce;
+          requestMock.verify();
           expect(err).to.exist;
           expect(err.message).to.equal('Unexpected status code 500');
           next();
@@ -557,14 +554,14 @@ describe('Populator', function() {
     describe('with no duplicate events', function() {
 
       it('should not return an error', function(next) {
-        get.withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
+        requestMock.expects('get').once().withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
           null,
           {statusCode: 200},
           {events: []}
         );
 
         populator._checkForDuplicateEvent(trackedEntityInstanceID, function(err) {
-          expect(get).to.be.calledOnce;
+          requestMock.verify();
           expect(err).to.not.exist;
           next();
         });
@@ -574,7 +571,7 @@ describe('Populator', function() {
     describe('with at least one duplicate event', function() {
 
       it('should return an error with the correct message', function(next) {
-        get.withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
+        requestMock.expects('get').once().withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
           null,
           {statusCode: 200},
           {events: [
@@ -583,7 +580,7 @@ describe('Populator', function() {
         );
 
         populator._checkForDuplicateEvent(trackedEntityInstanceID, function(err) {
-          expect(get).to.be.calledOnce;
+          requestMock.verify();
           expect(err).to.exist;
           expect(err.message).to.equal('Duplicate event');
           next();

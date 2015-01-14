@@ -30,16 +30,14 @@ var options = {
 
 describe('Tracker populator', function() {
   var sandbox = Sinon.sandbox.create();
-  var get;
-  var post;
+  var requestMock;
 
   var requestObject = {
     body: new Buffer('{}')
   };
 
   beforeEach(function(next) {
-    get = sandbox.stub(Request, 'get').yields(new Error('Unexpected invocation'));
-    post = sandbox.stub(Request, 'post').yields(new Error('Unexpected invocation'));
+    requestMock = sandbox.mock(Request);
     next();
   });
 
@@ -64,7 +62,7 @@ describe('Tracker populator', function() {
         url: URL.resolve(options.url, 'api/trackedEntityAttributes/attributeID'),
         json: true
       });
-      get.withArgs(getAttributeRequest, Sinon.match.func).yields(
+      requestMock.expects('get').once().withArgs(getAttributeRequest, Sinon.match.func).yields(
         null,
         {statusCode: 200},
         {
@@ -78,7 +76,7 @@ describe('Tracker populator', function() {
         url: URL.resolve(options.url, 'api/dataElements/dataElementID'),
         json: true
       });
-      get.withArgs(getDataElementRequest, Sinon.match.func).yields(
+      requestMock.expects('get').once().withArgs(getDataElementRequest, Sinon.match.func).yields(
         null,
         {statusCode: 200},
         {type: 'string'}
@@ -95,7 +93,7 @@ describe('Tracker populator', function() {
           ])
         })
       });
-      post.withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+      requestMock.expects('post').once().withArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
         null,
         {statusCode: 201},
         {
@@ -114,7 +112,7 @@ describe('Tracker populator', function() {
           dateOfIncident: '1970-01-01'
         })
       });
-      post.withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+      requestMock.expects('post').once().withArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
         null,
         {statusCode: 201},
         {status: 'SUCCESS'}
@@ -132,7 +130,7 @@ describe('Tracker populator', function() {
         }),
         json: true
       });
-      get.withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
+      requestMock.expects('get').once().withArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
         null,
         {statusCode: 200},
         {events: []}
@@ -153,7 +151,7 @@ describe('Tracker populator', function() {
           ])
         })
       });
-      post.withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+      requestMock.expects('post').once().withArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
         null,
         {statusCode: 201},
         {
@@ -167,8 +165,7 @@ describe('Tracker populator', function() {
         if (err) {
           return next(err);
         }
-        expect(get).to.have.callCount(3);
-        expect(post).to.have.callCount(3);
+        requestMock.verify();
         expect(TypeCache.firstUniqueTrackedEntityAttributeID).to.equal('attributeID');
         expect(TypeCache.trackedEntityAttributeTypes.attributeID).to.equal('string');
         expect(TypeCache.dataElementTypes.dataElementID).to.equal('string');
