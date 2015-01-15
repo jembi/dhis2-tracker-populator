@@ -7,7 +7,6 @@ var Populator = require('../lib/populator');
 var Request = require('request');
 var Sinon = require('sinon');
 var SinonChai = require('sinon-chai');
-var TypeCache = require('../lib/typeCache');
 var URL = require('url');
 
 var lab = exports.lab = Lab.script();
@@ -555,7 +554,7 @@ describe('Populator', function() {
     describe('with no unique attributes', function() {
 
       before(function(next) {
-        TypeCache.firstUniqueTrackedEntityAttributeID = null;
+        populator._cache.firstUniqueTrackedEntityAttributeID = null;
         next();
       });
 
@@ -572,12 +571,12 @@ describe('Populator', function() {
       var uniqueAttributeID = Object.keys(ATTRIBUTES)[0];
 
       before(function(next) {
-        TypeCache.firstUniqueTrackedEntityAttributeID = uniqueAttributeID;
+        populator._cache.firstUniqueTrackedEntityAttributeID = uniqueAttributeID;
         next();
       });
 
       after(function(next) {
-        TypeCache.firstUniqueTrackedEntityAttributeID = null;
+        populator._cache.firstUniqueTrackedEntityAttributeID = null;
         next();
       });
 

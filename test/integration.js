@@ -6,7 +6,6 @@ var Path = require('path');
 var Request = require('request');
 var Sinon = require('sinon');
 var TrackerPopulator = require('../lib/index');
-var TypeCache = require('../lib/typeCache');
 var URL = require('url');
 
 var lab = exports.lab = Lab.script();
@@ -43,13 +42,6 @@ describe('Tracker populator', function() {
 
   afterEach(function(next) {
     sandbox.restore();
-    next();
-  });
-
-  afterEach(function(next) {
-    TypeCache.trackedEntityAttributeTypes = {};
-    TypeCache.dataElementTypes = {};
-    TypeCache.firstUniqueTrackedEntityAttributeID = null;
     next();
   });
 
@@ -166,9 +158,6 @@ describe('Tracker populator', function() {
           return next(err);
         }
         requestMock.verify();
-        expect(TypeCache.firstUniqueTrackedEntityAttributeID).to.equal('attributeID');
-        expect(TypeCache.trackedEntityAttributeTypes.attributeID).to.equal('string');
-        expect(TypeCache.dataElementTypes.dataElementID).to.equal('string');
         next();
       });
     });
