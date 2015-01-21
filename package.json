@@ -9,7 +9,7 @@
     "url": "https://github.com/jembi/dhis2-tracker-populator"
   },
   "scripts": {
-    "test": "lab -vl",
+    "test": "lab -v",
     "cover": "lab -r html -o coverage.html"
   },
   "dependencies": {
