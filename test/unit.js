@@ -2,6 +2,7 @@
 
 var Chai = require('chai');
 var Lab = require('lab');
+var ObjectAssign = require('object-assign');
 var Path = require('path');
 var Populator = require('../lib/populator');
 var Request = require('request');
@@ -475,6 +476,45 @@ describe('Populator', function() {
         });
       });
     });
+
+    describe('with an eventOrgUnit and a successful response body', function() {
+
+      it('should not return an error', function(next) {
+        var eventOrgUnit = 'some event org unit';
+        var eventOrgUnitRequest = Sinon.match({
+          url: URL.resolve(OPTIONS.url, 'api/events'),
+          json: Sinon.match({
+            program: OPTIONS.programID,
+            programStage: OPTIONS.stageID,
+            trackedEntityInstance: trackedEntityInstanceID,
+            orgUnit: eventOrgUnit,
+            storedBy: 'admin',
+            eventDate: KNOWN_KEYS.eventDate,
+            dataValues: {}
+          })
+        });
+
+        var response = {statusCode: 201};
+        requestMock.expects('post').once().withExactArgs(eventOrgUnitRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+          null,
+          response,
+          {
+            importSummaries: [
+              {status: 'SUCCESS'}
+            ]
+          }
+        );
+
+        var knownKeys = ObjectAssign({}, KNOWN_KEYS, {eventOrgUnit: eventOrgUnit});
+
+        populator._addEvent(knownKeys, {}, trackedEntityInstanceID, function(err) {
+          requestMock.verify();
+          expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
+          expect(err).to.not.exist;
+          next();
+        });
+      });
+    });
   });
 
   describe('#checkForDuplicateEvent', function() {
@@ -540,6 +580,43 @@ describe('Populator', function() {
         );
 
         populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function(err) {
+          requestMock.verify();
+          expect(err).to.exist;
+          expect(err.message).to.equal('Duplicate event');
+          next();
+        });
+      });
+    });
+
+    describe('with an eventOrgUnit and at least one duplicate event', function() {
+
+      it('should return an error with the correct message', function(next) {
+      var eventOrgUnit = 'some event org unit';
+        var eventOrgUnitRequest = Sinon.match({
+          url: URL.resolve(OPTIONS.url, 'api/events'),
+          qs: Sinon.match({
+            program: OPTIONS.programID,
+            programStage: OPTIONS.stageID,
+            trackedEntityInstance: trackedEntityInstanceID,
+            orgUnit: eventOrgUnit,
+            startDate: '1970-01-01'
+          }),
+          json: true
+        });
+
+        requestMock.expects('get').once().withExactArgs(eventOrgUnitRequest, Sinon.match.func).yieldsAsync(
+          null,
+          {statusCode: 200},
+          {
+            events: [
+              {eventDate: Date.now()}
+            ]
+          }
+        );
+
+        var knownKeys = ObjectAssign({}, KNOWN_KEYS, {eventOrgUnit: eventOrgUnit});
+
+        populator._checkForDuplicateEvent(knownKeys, trackedEntityInstanceID, function(err) {
           requestMock.verify();
           expect(err).to.exist;
           expect(err.message).to.equal('Duplicate event');
