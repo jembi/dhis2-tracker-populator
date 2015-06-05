@@ -249,6 +249,7 @@ describe('Populator', function() {
 
     var requestBody = {
       program: OPTIONS.programID,
+      orgUnit: KNOWN_KEYS.orgUnit,
       trackedEntityInstance: trackedEntityInstanceID,
       dateOfEnrollment: KNOWN_KEYS.programDate,
       dateOfIncident: KNOWN_KEYS.programDate

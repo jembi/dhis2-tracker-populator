@@ -99,6 +99,7 @@ describe('Tracker populator', function() {
         url: URL.resolve(options.url, 'api/enrollments'),
         json: Sinon.match({
           program: 'programID',
+          orgUnit: 'expectedOrgUnit',
           trackedEntityInstance: trackedEntityInstanceID,
           dateOfEnrollment: '1970-01-01',
           dateOfIncident: '1970-01-01'
