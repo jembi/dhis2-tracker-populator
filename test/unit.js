@@ -713,6 +713,31 @@ describe('Populator', function() {
           next();
         });
       });
+
+      it('should return an error with the correct message when no tracked entity instance is found', function(next) {
+        var existingTrackedEntityInstanceID = 'existing tracked entity instance id';
+
+        var getTrackedEntityInstanceRequest = Sinon.match({
+          url: URL.resolve(OPTIONS.url, 'api/trackedEntityInstances'),
+          qs: Sinon.match({
+            ou: KNOWN_KEYS.orgUnit,
+            attribute: uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]
+          }),
+          json: true
+        });
+        requestMock.expects('get').once().withExactArgs(getTrackedEntityInstanceRequest, Sinon.match.func).yieldsAsync(
+          null,
+          {},
+          {} // empty body
+        );
+
+        populator._getTrackedEntityInstanceID(KNOWN_KEYS, ATTRIBUTES, function(err) {
+          requestMock.verify();
+          expect(err).to.exist;
+          expect(err.message).to.equal('Failed to look up existing tracked entity instance');
+          next();
+        });
+      });
     });
   });
 
