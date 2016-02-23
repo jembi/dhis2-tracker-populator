@@ -569,7 +569,7 @@ describe('Populator', function() {
 
     describe('with at least one duplicate event', function() {
 
-      it('should return an error with the correct message', function(next) {
+      it('should not return an error', function(next) {
         requestMock.expects('get').once().withExactArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
           null,
           {statusCode: 200},
@@ -590,7 +590,7 @@ describe('Populator', function() {
 
     describe('with an eventOrgUnit and at least one duplicate event', function() {
 
-      it('should return an error with the correct message', function(next) {
+      it('should not return and error', function(next) {
       var eventOrgUnit = 'some event org unit';
         var eventOrgUnitRequest = Sinon.match({
           url: URL.resolve(OPTIONS.url, 'api/events'),
