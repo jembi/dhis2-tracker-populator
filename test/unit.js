@@ -405,7 +405,7 @@ describe('Populator', function() {
         var response = {statusCode: 500};
         requestMock.expects('post').once().withExactArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
-        populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
+        populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, false, function(err) {
           requestMock.verify();
           expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
@@ -421,7 +421,7 @@ describe('Populator', function() {
         var response = {statusCode: 201};
         requestMock.expects('post').once().withExactArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, null);
 
-        populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
+        populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, false, function(err) {
           requestMock.verify();
           expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
@@ -445,7 +445,7 @@ describe('Populator', function() {
           }
         );
 
-        populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
+        populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, false, function(err) {
           requestMock.verify();
           expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
@@ -469,7 +469,7 @@ describe('Populator', function() {
           }
         );
 
-        populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, function(err) {
+        populator._addEvent(KNOWN_KEYS, DATA_ELEMENTS, trackedEntityInstanceID, false, function(err) {
           requestMock.verify();
           expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
@@ -508,7 +508,7 @@ describe('Populator', function() {
 
         var knownKeys = ObjectAssign({}, KNOWN_KEYS, {eventOrgUnit: eventOrgUnit});
 
-        populator._addEvent(knownKeys, {}, trackedEntityInstanceID, function(err) {
+        populator._addEvent(knownKeys, {}, trackedEntityInstanceID, false, function(err) {
           requestMock.verify();
           expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
@@ -541,7 +541,7 @@ describe('Populator', function() {
           {statusCode: 500}
         );
 
-        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function(err) {
+        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, false, function(err) {
           requestMock.verify();
           expect(err).to.exist;
           expect(err.message).to.equal('Unexpected status code 500');
@@ -559,7 +559,7 @@ describe('Populator', function() {
           {events: []}
         );
 
-        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function(err) {
+        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, false, function(err) {
           requestMock.verify();
           expect(err).to.not.exist;
           next();
@@ -580,10 +580,9 @@ describe('Populator', function() {
           }
         );
 
-        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function(err) {
+        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, false, function(err) {
           requestMock.verify();
-          expect(err).to.exist;
-          expect(err.message).to.equal('Duplicate event');
+          expect(err).to.not.exist;
           next();
         });
       });
@@ -617,10 +616,9 @@ describe('Populator', function() {
 
         var knownKeys = ObjectAssign({}, KNOWN_KEYS, {eventOrgUnit: eventOrgUnit});
 
-        populator._checkForDuplicateEvent(knownKeys, trackedEntityInstanceID, function(err) {
+        populator._checkForDuplicateEvent(knownKeys, trackedEntityInstanceID, false, function(err) {
           requestMock.verify();
-          expect(err).to.exist;
-          expect(err.message).to.equal('Duplicate event');
+          expect(err).to.not.exist;
           next();
         });
       });
