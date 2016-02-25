@@ -123,7 +123,7 @@ describe('Tracker populator', function() {
         }),
         json: true
       });
-      requestMock.expects('get').once().withExactArgs(checkForDuplicateEventRequest, Sinon.match.func).yieldsAsync(
+      requestMock.expects('get').once().withExactArgs(checkForDuplicateEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
         null,
         {statusCode: 200},
         {events: []}
