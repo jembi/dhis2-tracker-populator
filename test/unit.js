@@ -131,15 +131,16 @@ describe('Populator', function() {
     describe('with an unknown conflict', function() {
 
       it('should return an error with the correct message', function(next) {
-        var response = {statusCode: 201};
+        var response = {statusCode: 409};
         requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
-          {
-            status: 'ERROR',
-            conflicts: [
-              {value: 'Unknown error'}
-            ]
+          {response:{
+              status: 'ERROR',
+              conflicts: [
+                {value: 'Unknown error'}
+              ]
+            }
           }
         );
 
@@ -156,16 +157,17 @@ describe('Populator', function() {
     describe('with more than one conflict', function() {
 
       it('should return an error with the correct message', function(next) {
-        var response = {statusCode: 201};
+        var response = {statusCode: 409};
         requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
-          {
-            status: 'ERROR',
-            conflicts: [
-              {value: 'Non-unique'},
-              {value: 'Unknown error'}
-            ]
+          {response:{
+              status: 'ERROR',
+              conflicts: [
+                {value: 'Non-unique'},
+                {value: 'Unknown error'}
+              ]
+            }
           }
         );
 
@@ -196,15 +198,16 @@ describe('Populator', function() {
             .withExactArgs(KNOWN_KEYS, ATTRIBUTES, trackedEntityInstanceID, Sinon.match.func)
             .yieldsAsync(null, trackedEntityInstanceID);
 
-        var response = {statusCode: 201};
+        var response = {statusCode: 409};
         requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
-          {
-            status: 'ERROR',
-            conflicts: [
-              {value: 'Non-unique'}
-            ]
+          {response:{
+              status: 'ERROR',
+              conflicts: [
+                {value: 'Non-unique'}
+              ]
+            }
           }
         );
 
@@ -227,9 +230,10 @@ describe('Populator', function() {
         requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
-          {
+          {response: {
             status: 'SUCCESS',
             reference: newTrackedEntityInstanceID
+            }
           }
         );
 
@@ -438,10 +442,11 @@ describe('Populator', function() {
         requestMock.expects('post').once().withExactArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
-          {
-            importSummaries: [
-              {status: 'ERROR'}
-            ]
+          {response:{
+              importSummaries: [
+                {status: 'ERROR'}
+              ]
+            }
           }
         );
 
@@ -458,14 +463,15 @@ describe('Populator', function() {
     describe('with a successful response body', function() {
 
       it('should not return an error', function(next) {
-        var response = {statusCode: 201};
+        var response = {statusCode: 200};
         requestMock.expects('post').once().withExactArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
-          {
-            importSummaries: [
-              {status: 'SUCCESS'}
-            ]
+          {response:{
+              importSummaries: [
+                {status: 'SUCCESS'}
+              ]
+            }
           }
         );
 
@@ -499,10 +505,11 @@ describe('Populator', function() {
         requestMock.expects('post').once().withExactArgs(eventOrgUnitRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
-          {
-            importSummaries: [
-              {status: 'SUCCESS'}
-            ]
+          {response:{
+              importSummaries: [
+                {status: 'SUCCESS'}
+              ]
+            }
           }
         );
 
@@ -698,7 +705,7 @@ describe('Populator', function() {
           url: URL.resolve(OPTIONS.url, 'api/trackedEntityInstances'),
           qs: Sinon.match({
             ou: KNOWN_KEYS.orgUnit,
-            attribute: uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]
+            filter: uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]
           }),
           json: true
         });
@@ -706,8 +713,11 @@ describe('Populator', function() {
           null,
           {},
           {
-            rows: [
-              [existingTrackedEntityInstanceID]
+            trackedEntityInstances:
+            [
+              {
+                trackedEntityInstance: existingTrackedEntityInstanceID
+              }
             ]
           }
         );
@@ -727,7 +737,7 @@ describe('Populator', function() {
           url: URL.resolve(OPTIONS.url, 'api/trackedEntityInstances'),
           qs: Sinon.match({
             ou: KNOWN_KEYS.orgUnit,
-            attribute: uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]
+            filter: uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]
           }),
           json: true
         });
@@ -754,7 +764,7 @@ describe('Populator', function() {
           url: URL.resolve(OPTIONS.url, 'api/trackedEntityInstances'),
           qs: Sinon.match({
             ou: KNOWN_KEYS.orgUnit,
-            attribute: uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]
+            filter: uniqueAttributeID + ':EQ:' + ATTRIBUTES[uniqueAttributeID]
           }),
           json: true
         });
@@ -843,7 +853,7 @@ describe('Populator', function() {
         requestMock.expects('put').once().withExactArgs(updateTrackedEntityInstanceRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
-          {status: 'ERROR'}
+          {response:{status: 'ERROR'}}
         );
 
         populator._updateTrackedEntityInstance(KNOWN_KEYS, ATTRIBUTES, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
@@ -863,7 +873,7 @@ describe('Populator', function() {
         requestMock.expects('put').once().withExactArgs(updateTrackedEntityInstanceRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
-          {status: 'SUCCESS'}
+          {response:{status: 'SUCCESS'}}
         );
 
         populator._updateTrackedEntityInstance(KNOWN_KEYS, ATTRIBUTES, trackedEntityInstanceID, function(err, returnedTrackedEntityInstanceID) {
@@ -1034,10 +1044,11 @@ describe('Populator with duplicate stage ID', function() {
         requestMock.expects('post').once().withExactArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
-          {
-            importSummaries: [
-              {status: 'SUCCESS'}
-            ]
+          {response:{
+              importSummaries: [
+                {status: 'SUCCESS'}
+              ]
+            }
           }
         );
 
