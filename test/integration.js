@@ -88,9 +88,10 @@ describe('Tracker populator', function() {
       requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
         null,
         {statusCode: 201},
-        {
-          status: 'SUCCESS',
-          reference: trackedEntityInstanceID
+        {response: {
+            status: 'SUCCESS',
+            reference: trackedEntityInstanceID
+          }
         }
       );
  
@@ -147,10 +148,11 @@ describe('Tracker populator', function() {
       requestMock.expects('post').once().withExactArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
         null,
         {statusCode: 201},
-        {
-          importSummaries: [
-            {status: 'SUCCESS'}
-          ]
+        {response:{
+            importSummaries: [
+              {status: 'SUCCESS'}
+            ]
+          }
         }
       );
  
