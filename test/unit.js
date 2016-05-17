@@ -255,8 +255,8 @@ describe('Populator', function() {
       program: OPTIONS.programID,
       orgUnit: KNOWN_KEYS.orgUnit,
       trackedEntityInstance: trackedEntityInstanceID,
-      dateOfEnrollment: KNOWN_KEYS.programDate,
-      dateOfIncident: KNOWN_KEYS.programDate
+      enrollmentDate: KNOWN_KEYS.programDate,
+      incidentDate: KNOWN_KEYS.programDate
     };
     var requestObject = {
       method: 'POST',

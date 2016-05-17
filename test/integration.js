@@ -102,8 +102,8 @@ describe('Tracker populator', function() {
           program: 'programID',
           orgUnit: 'expectedOrgUnit',
           trackedEntityInstance: trackedEntityInstanceID,
-          dateOfEnrollment: '1970-01-01',
-          dateOfIncident: '1970-01-01'
+          enrollmentDate: '1970-01-01',
+          incidentDate: '1970-01-01'
         })
       });
       requestMock.expects('post').once().withExactArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
