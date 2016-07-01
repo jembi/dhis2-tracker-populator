@@ -547,7 +547,8 @@ describe('Populator', function() {
         program: OPTIONS.programID,
         programStage: OPTIONS.stageID,
         trackedEntityInstance: trackedEntityInstanceID,
-        orgUnit: KNOWN_KEYS.orgUnit,
+        pageSize: 1,
+        page: 1,
         startDate: '1970-01-01'
       }),
       json: true
@@ -638,7 +639,8 @@ describe('Populator', function() {
             program: OPTIONS.programID,
             programStage: OPTIONS.stageID,
             trackedEntityInstance: trackedEntityInstanceID,
-            orgUnit: eventOrgUnit,
+            pageSize: 1,
+            page: 1,
             startDate: '1970-01-01'
           }),
           json: true
@@ -945,7 +947,8 @@ describe('Populator with duplicate stage ID', function() {
         program: OPTIONS.programID,
         programStage: OPTIONS.stageID,
         trackedEntityInstance: trackedEntityInstanceID,
-        orgUnit: KNOWN_KEYS.orgUnit,
+        pageSize: 1,
+        page: 1,
         startDate: '1970-01-01'
       }),
       json: true
