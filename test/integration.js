@@ -116,7 +116,8 @@ describe('Tracker populator', function() {
       var checkForDuplicateEventRequest = Sinon.match({
         url: URL.resolve(options.url, 'api/events'),
         qs: Sinon.match({
-          orgUnit: 'expectedOrgUnit',
+          pageSize: 1,
+          page: 1,
           program: 'programID',
           programStage: 'stageID',
           trackedEntityInstance: trackedEntityInstanceID,
