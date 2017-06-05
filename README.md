@@ -34,7 +34,8 @@ Any number of additional attributes or data elements can be specified with colum
 * If the tracked entity is already enrolled into the program, the application will continue on to adding the event
 * There is no restriction on the number of events added to a program for a particular tracked entity, and multiple identical events can be added (for example if the same csv file is operated on more than once) 
 * The application assumes that there is only one unique attribute per tracked entity (this is determined by the application at run time from the DHIS2 resources api) 
-* The csv file can be generated from a sql query to a database, from an excel spreadsheet, or any other source, as ong as it is added to the csv directory in the proper format (this must actually be comma separated)   
+* The csv file can be generated from a sql query to a database, from an excel spreadsheet, or any other source, as long as it is added to the csv directory in the proper format (this must actually be comma separated)
+* Event coordinates can be added by specifying latitude and longitude columns in the csv.
 
 e.g. file: `IpHINAT79UW.A03MvHHogjR.cyl5vuJ5ETQ.csv`
 ```csv
