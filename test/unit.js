@@ -33,7 +33,9 @@ describe('Populator', function() {
   var KNOWN_KEYS = {
     orgUnit: 'some org unit',
     programDate: '1970-01-01',
-    eventDate: '1970-01-01'
+    eventDate: '1970-01-01',
+    latitude: '1.11',
+    longitude: '2.22'
   };
   var ATTRIBUTES = {
     attributeID: 'some attribute value'
@@ -388,7 +390,11 @@ describe('Populator', function() {
         eventDate: KNOWN_KEYS.eventDate,
         dataValues: Sinon.match(Object.keys(DATA_ELEMENTS).map(function(key) {
           return Sinon.match({dataElement: key, value: DATA_ELEMENTS[key]});
-        }))
+        })),
+        coordinate: {
+          latitude: KNOWN_KEYS.latitude,
+          longitude: KNOWN_KEYS.longitude
+        }
       })
     });
 
