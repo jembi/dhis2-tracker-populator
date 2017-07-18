@@ -90,7 +90,7 @@ describe('Tracker populator', function() {
         {statusCode: 201},
         {response: {
             status: 'SUCCESS',
-            reference: trackedEntityInstanceID
+            importSummaries: [{ reference: trackedEntityInstanceID }]
           }
         }
       );
