@@ -139,9 +139,11 @@ describe('Populator', function() {
           response,
           {response:{
               status: 'ERROR',
-              conflicts: [
-                {value: 'Unknown error'}
-              ]
+              importSummaries: [{ 
+                conflicts: [
+                  {value: 'Unknown error'}
+                ]
+              }]
             }
           }
         );
@@ -165,10 +167,12 @@ describe('Populator', function() {
           response,
           {response:{
               status: 'ERROR',
-              conflicts: [
-                {value: 'Non-unique'},
-                {value: 'Unknown error'}
-              ]
+              importSummaries: [{ 
+                conflicts: [
+                  {value: 'Non-unique'},
+                  {value: 'Unknown error'}
+                ]
+              }]
             }
           }
         );
@@ -206,9 +210,11 @@ describe('Populator', function() {
           response,
           {response:{
               status: 'ERROR',
-              conflicts: [
-                {value: 'Non-unique'}
-              ]
+              importSummaries: [{ 
+                conflicts: [
+                  {value: 'Non-unique'}
+                ]
+              }]
             }
           }
         );
@@ -232,9 +238,11 @@ describe('Populator', function() {
         requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
           null,
           response,
-          {response: {
-            status: 'SUCCESS',
-            reference: newTrackedEntityInstanceID
+          { response: {
+              status: 'SUCCESS',
+              importSummaries: [{ 
+                reference: newTrackedEntityInstanceID
+              }]
             }
           }
         );
