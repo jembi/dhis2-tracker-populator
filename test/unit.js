@@ -248,7 +248,7 @@ describe('Populator', function () {
 
     describe('with valid arguments', function () {
 
-      it('should should return the new tracked entity instance ID', function (next) {
+      it('should return the new tracked entity instance ID', function (next) {
         var newTrackedEntityInstanceID = 'new tracked entity instance id';
         var response = {
           statusCode: 201
@@ -1144,6 +1144,262 @@ describe('Populator with duplicate stage ID', function () {
           requestMock.verify();
           expect(addEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
+          next();
+        });
+      });
+    });
+  });
+});
+
+describe('Populator with defined dhis api version', function () {
+  var OPTIONS = {
+    url: 'http://localhost/',
+    programID: 'some program id',
+    stageID: 'some stage id',
+    trackedEntityID: 'some tracked entity id',
+    duplicateThreshold: 0,
+    dhisVersion: '28'
+  };
+  var KNOWN_KEYS = {
+    orgUnit: 'some org unit',
+    programDate: '1970-01-01',
+    eventDate: '1970-01-01',
+    latitude: '1.11',
+    longitude: '2.22'
+  };
+  var ATTRIBUTES = {
+    attributeID: 'some attribute value'
+  };
+  var DATA_ELEMENTS = {
+    dataElementID: 'some data element value'
+  };
+
+  var sandbox = Sinon.sandbox.create();
+  var populator = new Populator(OPTIONS);
+  var requestMock;
+
+  beforeEach(function (next) {
+    requestMock = sandbox.mock(Request);
+    next();
+  });
+
+  afterEach(function (next) {
+    sandbox.restore();
+    next();
+  });
+
+  describe('#addTrackedEntity', function () {
+
+    var requestObjectBody = {
+      trackedEntity: OPTIONS.trackedEntityInstanceID,
+      orgUnit: KNOWN_KEYS.orgUnit,
+      attributes: ATTRIBUTES
+    };
+    var requestObject = {
+      method: 'POST',
+      path: '/trackedEntityInstances',
+      body: new Buffer(JSON.stringify(requestObjectBody))
+    };
+    var expectedRequestObject = Sinon.match({
+      method: requestObject.method,
+      path: requestObject.path,
+      body: Sinon.match(requestObjectBody),
+      timestamp: Sinon.match.number
+    });
+
+    var addTrackedEntityResponseListener;
+    var addTrackedEntityRequest = Sinon.match({
+      url: URL.resolve(OPTIONS.url, 'api/28/trackedEntityInstances'),
+      json: Sinon.match({
+        trackedEntity: OPTIONS.trackedEntityID,
+        orgUnit: KNOWN_KEYS.orgUnit,
+        attributes: Sinon.match(Object.keys(ATTRIBUTES).map(function (key) {
+          return Sinon.match({
+            attribute: key,
+            value: ATTRIBUTES[key]
+          });
+        }))
+      })
+    });
+
+    beforeEach(function (next) {
+      addTrackedEntityResponseListener = sandbox.stub();
+      populator.on('addTrackedEntityResponse', addTrackedEntityResponseListener);
+      next();
+    });
+
+    afterEach(function (next) {
+      populator.removeListener('addTrackedEntityResponse', addTrackedEntityResponseListener);
+      next();
+    });
+
+    describe('with a non-201 response status code', function () {
+
+      it('should return an error with the correct message', function (next) {
+        var response = {
+          statusCode: 500
+        };
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, {});
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function (err) {
+          requestMock.verify();
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
+          expect(err).to.exist;
+          expect(err.message).to.equal('Unexpected status code 500');
+          next();
+        });
+      });
+    });
+
+    describe('with an invalid response body', function () {
+
+      it('should return an error with the correct message', function (next) {
+        var response = {
+          statusCode: 201
+        };
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(null, response, '<html></html>');
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function (err) {
+          requestMock.verify();
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
+          expect(err).to.exist;
+          expect(err.message).to.equal('Could not parse response body');
+          next();
+        });
+      });
+    });
+
+    describe('with an unknown conflict', function () {
+
+      it('should return an error with the correct message', function (next) {
+        var response = {
+          statusCode: 409
+        };
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+          null,
+          response, {
+            response: {
+              status: 'ERROR',
+              importSummaries: [{
+                conflicts: [{
+                  value: 'Unknown error'
+                }]
+              }]
+            }
+          }
+        );
+
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function (err) {
+          requestMock.verify();
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
+          expect(err).to.exist;
+          expect(err.message).to.equal('Adding tracked entity failed');
+          next();
+        });
+      });
+    });
+
+    describe('with more than one conflict', function () {
+
+      it('should return an error with the correct message', function (next) {
+        var response = {
+          statusCode: 409
+        };
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+          null,
+          response, {
+            response: {
+              status: 'ERROR',
+              importSummaries: [{
+                conflicts: [{
+                    value: 'Non-unique'
+                  },
+                  {
+                    value: 'Unknown error'
+                  }
+                ]
+              }]
+            }
+          }
+        );
+
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function (err) {
+          requestMock.verify();
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
+          expect(err).to.exist;
+          expect(err.message).to.equal('Adding tracked entity failed');
+          next();
+        });
+      });
+    });
+
+    describe('with a non-unique conflict', function () {
+      var populatorMock;
+
+      beforeEach(function (next) {
+        populatorMock = sandbox.mock(populator);
+        next();
+      });
+
+      it('should get the tracked entity instance id and update it', function (next) {
+        var trackedEntityInstanceID = 'some tracked entity instance id';
+        populatorMock.expects('_getTrackedEntityInstanceID').once()
+          .withExactArgs(KNOWN_KEYS, ATTRIBUTES, Sinon.match.func)
+          .yieldsAsync(null, trackedEntityInstanceID);
+        populatorMock.expects('_updateTrackedEntityInstance').once()
+          .withExactArgs(KNOWN_KEYS, ATTRIBUTES, trackedEntityInstanceID, Sinon.match.func)
+          .yieldsAsync(null, trackedEntityInstanceID);
+
+        var response = {
+          statusCode: 409
+        };
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+          null,
+          response, {
+            response: {
+              status: 'ERROR',
+              importSummaries: [{
+                conflicts: [{
+                  value: 'Non-unique'
+                }]
+              }]
+            }
+          }
+        );
+
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function (err, returnedTrackedEntityInstanceID) {
+          requestMock.verify();
+          populatorMock.verify();
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
+          expect(err).to.not.exist;
+          expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
+          next();
+        });
+      });
+    });
+
+    describe('with valid arguments', function () {
+
+      it('should return the new tracked entity instance ID', function (next) {
+        var newTrackedEntityInstanceID = 'new tracked entity instance id';
+        var response = {
+          statusCode: 201
+        };
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+          null,
+          response, {
+            response: {
+              status: 'SUCCESS',
+              importSummaries: [{
+                reference: newTrackedEntityInstanceID
+              }]
+            }
+          }
+        );
+
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function (err, trackedEntityInstanceID) {
+          requestMock.verify();
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
+          expect(err).to.not.exist;
+          expect(trackedEntityInstanceID).to.equal(newTrackedEntityInstanceID);
           next();
         });
       });
