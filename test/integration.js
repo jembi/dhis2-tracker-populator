@@ -27,7 +27,7 @@ var options = {
   threshold: 1
 };
 
-describe('Tracker populator', function() {
+describe('Tracker populator', function () {
   var sandbox = Sinon.sandbox.create();
   var requestMock;
 
@@ -35,29 +35,29 @@ describe('Tracker populator', function() {
     body: new Buffer('{}')
   };
 
-  beforeEach(function(next) {
+  beforeEach(function (next) {
     requestMock = sandbox.mock(Request);
     next();
   });
 
-  afterEach(function(next) {
+  afterEach(function (next) {
     sandbox.restore();
     next();
   });
 
-  describe('with a valid csv', function() {
+  describe('with a valid csv', function () {
     var trackedEntityInstanceID = 'some tracked entity instance id';
 
-    it('should make the expected requests', function(next) {
+    it('should make the expected requests', function (next) {
       // Get attributes
       var getAttributeRequest = Sinon.match({
         url: URL.resolve(options.url, 'api/trackedEntityAttributes/attributeID'),
         json: true
       });
       requestMock.expects('get').once().withExactArgs(getAttributeRequest, Sinon.match.func).yields(
-        null,
-        {statusCode: 200},
-        {
+        null, {
+          statusCode: 200
+        }, {
           valueType: 'string',
           unique: true
         }
@@ -69,11 +69,13 @@ describe('Tracker populator', function() {
         json: true
       });
       requestMock.expects('get').once().withExactArgs(getDataElementRequest, Sinon.match.func).yields(
-        null,
-        {statusCode: 200},
-        {type: 'string'}
+        null, {
+          statusCode: 200
+        }, {
+          type: 'string'
+        }
       );
- 
+
       // Add tracked entity
       var addTrackedEntityRequest = Sinon.match({
         url: URL.resolve(options.url, 'api/trackedEntityInstances'),
@@ -81,20 +83,26 @@ describe('Tracker populator', function() {
           trackedEntity: 'trackedEntityID',
           orgUnit: 'expectedOrgUnit',
           attributes: Sinon.match([
-            Sinon.match({attribute: 'attributeID', value: 'expectedAttribute'})
+            Sinon.match({
+              attribute: 'attributeID',
+              value: 'expectedAttribute'
+            })
           ])
         })
       });
       requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
-        null,
-        {statusCode: 201},
-        {response: {
+        null, {
+          statusCode: 201
+        }, {
+          response: {
             status: 'SUCCESS',
-            importSummaries: [{ reference: trackedEntityInstanceID }]
+            importSummaries: [{
+              reference: trackedEntityInstanceID
+            }]
           }
         }
       );
- 
+
       // Enroll in program
       var enrollInProgramRequest = Sinon.match({
         url: URL.resolve(options.url, 'api/enrollments'),
@@ -107,9 +115,11 @@ describe('Tracker populator', function() {
         })
       });
       requestMock.expects('post').once().withExactArgs(enrollInProgramRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
-        null,
-        {statusCode: 201},
-        {status: 'SUCCESS'}
+        null, {
+          statusCode: 201
+        }, {
+          status: 'SUCCESS'
+        }
       );
 
       // Check for duplicate events
@@ -126,11 +136,13 @@ describe('Tracker populator', function() {
         json: true
       });
       requestMock.expects('get').once().withExactArgs(checkForDuplicateEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
-        null,
-        {statusCode: 200},
-        {events: []}
+        null, {
+          statusCode: 200
+        }, {
+          events: []
+        }
       );
- 
+
       // Add event
       var addEventRequest = Sinon.match({
         url: URL.resolve(options.url, 'api/events'),
@@ -142,22 +154,26 @@ describe('Tracker populator', function() {
           storedBy: 'admin',
           eventDate: '1970-01-02',
           dataValues: Sinon.match([
-            Sinon.match({dataElement: 'dataElementID', value: 'expectedDataElement'})
+            Sinon.match({
+              dataElement: 'dataElementID',
+              value: 'expectedDataElement'
+            })
           ])
         })
       });
       requestMock.expects('post').once().withExactArgs(addEventRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
-        null,
-        {statusCode: 201},
-        {response:{
-            importSummaries: [
-              {status: 'SUCCESS'}
-            ]
+        null, {
+          statusCode: 201
+        }, {
+          response: {
+            importSummaries: [{
+              status: 'SUCCESS'
+            }]
           }
         }
       );
- 
-      TrackerPopulator(options, function(err) {
+
+      TrackerPopulator(options, function (err) {
         if (err) {
           return next(err);
         }

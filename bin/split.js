@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 /**
  * Split a multi-row CSV file into multiple single-row CSV files, keeping the header row intact.
  */
@@ -28,7 +29,7 @@ var headers = null;
 var filename = Path.basename(inputPath);
 var count = 0;
 
-parser.on('readable', function() {
+parser.on('readable', function () {
   if (!headers) {
     headers = parser.read();
   }
