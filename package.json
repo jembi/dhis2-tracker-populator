@@ -1,6 +1,6 @@
 {
   "name": "dhis2-tracker-populator",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "main": "./lib/populator.js",
   "bin": "./bin/index.js",
   "preferGlobal": true,
