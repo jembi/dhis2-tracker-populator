@@ -61,7 +61,7 @@ describe('Populator', function () {
   describe('#addTrackedEntity', function () {
 
     var requestObjectBody = {
-      trackedEntity: OPTIONS.trackedEntityInstanceID,
+      trackedEntityType: OPTIONS.trackedEntityInstanceID,
       orgUnit: KNOWN_KEYS.orgUnit,
       attributes: ATTRIBUTES
     };
@@ -81,7 +81,7 @@ describe('Populator', function () {
     var addTrackedEntityRequest = Sinon.match({
       url: URL.resolve(OPTIONS.url, 'api/trackedEntityInstances'),
       json: Sinon.match({
-        trackedEntity: OPTIONS.trackedEntityID,
+        trackedEntityType: OPTIONS.trackedEntityID,
         orgUnit: KNOWN_KEYS.orgUnit,
         attributes: Sinon.match(Object.keys(ATTRIBUTES).map(function (key) {
           return Sinon.match({
@@ -853,7 +853,7 @@ describe('Populator', function () {
     var trackedEntityInstanceID = 'some tracked entity instance id';
 
     var requestObjectBody = {
-      trackedEntity: OPTIONS.trackedEntityInstanceID,
+      trackedEntityType: OPTIONS.trackedEntityInstanceID,
       orgUnit: KNOWN_KEYS.orgUnit,
       attributes: ATTRIBUTES
     };
@@ -873,7 +873,7 @@ describe('Populator', function () {
     var updateTrackedEntityInstanceRequest = Sinon.match({
       url: URL.resolve(OPTIONS.url, 'api/trackedEntityInstances/' + trackedEntityInstanceID),
       json: Sinon.match({
-        trackedEntity: OPTIONS.trackedEntityID,
+        trackedEntityType: OPTIONS.trackedEntityID,
         orgUnit: KNOWN_KEYS.orgUnit,
         attributes: Sinon.match(Object.keys(ATTRIBUTES).map(function (key) {
           return Sinon.match({
@@ -1191,7 +1191,7 @@ describe('Populator with defined dhis api version', function () {
   describe('#addTrackedEntity', function () {
 
     var requestObjectBody = {
-      trackedEntity: OPTIONS.trackedEntityInstanceID,
+      trackedEntityType: OPTIONS.trackedEntityInstanceID,
       orgUnit: KNOWN_KEYS.orgUnit,
       attributes: ATTRIBUTES
     };
@@ -1211,7 +1211,7 @@ describe('Populator with defined dhis api version', function () {
     var addTrackedEntityRequest = Sinon.match({
       url: URL.resolve(OPTIONS.url, 'api/28/trackedEntityInstances'),
       json: Sinon.match({
-        trackedEntity: OPTIONS.trackedEntityID,
+        trackedEntityType: OPTIONS.trackedEntityID,
         orgUnit: KNOWN_KEYS.orgUnit,
         attributes: Sinon.match(Object.keys(ATTRIBUTES).map(function (key) {
           return Sinon.match({
