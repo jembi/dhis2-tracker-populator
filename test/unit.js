@@ -61,7 +61,7 @@ describe('Populator', function () {
   describe('#addTrackedEntity', function () {
 
     var requestObjectBody = {
-      trackedEntityType: OPTIONS.trackedEntityInstanceID,
+      trackedEntityType: OPTIONS.trackedEntityID,
       orgUnit: KNOWN_KEYS.orgUnit,
       attributes: ATTRIBUTES
     };
@@ -853,7 +853,7 @@ describe('Populator', function () {
     var trackedEntityInstanceID = 'some tracked entity instance id';
 
     var requestObjectBody = {
-      trackedEntityType: OPTIONS.trackedEntityInstanceID,
+      trackedEntityType: OPTIONS.trackedEntityID,
       orgUnit: KNOWN_KEYS.orgUnit,
       attributes: ATTRIBUTES
     };
@@ -1191,7 +1191,7 @@ describe('Populator with defined dhis api version', function () {
   describe('#addTrackedEntity', function () {
 
     var requestObjectBody = {
-      trackedEntityType: OPTIONS.trackedEntityInstanceID,
+      trackedEntityType: OPTIONS.trackedEntityID,
       orgUnit: KNOWN_KEYS.orgUnit,
       attributes: ATTRIBUTES
     };
