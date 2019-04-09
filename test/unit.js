@@ -760,8 +760,6 @@ describe('Populator', function () {
       });
     });
 
-// multiple unique
-
     describe('with at least one unique attribute', function () {
       var uniqueAttributeID = Object.keys(ATTRIBUTES)[0];
 
