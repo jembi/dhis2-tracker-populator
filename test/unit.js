@@ -970,92 +970,21 @@ describe('Populator', function () {
 });
 
 describe('Populator with specified unique tracked entity attribute ID', function () {
-  var sandbox = Sinon.sandbox.create();
-  var populatorOptions = {
-    url: 'http://localhost/',
-    programID: 'some program id',
-    stageID: 'some stage id',
-    trackedEntityID: 'some tracked entity id',
-    duplicateThreshold: 0,
-    uniqueAttributeID: 'key3'
-  }
-  var populator = new Populator(populatorOptions);
-  var requestMock;
+  describe('with multiple unique attributes', function () {
+    it('should set specified uniqueTrackedEntityAttributeID to the cache', async function () {
+      var populatorOptions = {
+        uniqueAttributeID: 'key3'
+      }
+      var populator = await new Populator(populatorOptions);
 
-  beforeEach(function (next) {
-    requestMock = sandbox.mock(Request);
-    next();
-  });
-
-  afterEach(function (next) {
-    sandbox.restore();
-    next();
-  });
-
-  describe('#getTrackedEntityAttributeType', function () {
-
-    beforeEach(function (next) {
-      populator._cache = new Cache()
-      populator._cache.createTrackedEntityAttribute('key1', 'type1')
-      populator._cache.createTrackedEntityAttribute('key2', 'type2')
-      populator._cache.createTrackedEntityAttribute('key3', 'type3')
-      next();
+      expect(populator._cache.uniqueTrackedEntityAttributeID).to.equal('key3');
     });
 
-    describe('with multiple unique attributes', function () {
-      it('should set specified uniqueTrackedEntityAttributeID to the cache', function (next) {
-        var trackedEntityAttributeID = 'key3'
-        var getTrackedEntityAttributeTypeRequest = Sinon.match({
-          url: URL.resolve(
-            populatorOptions.url,
-            'api/trackedEntityAttributes/' + trackedEntityAttributeID
-            ),
-          json: true
-        });
+    it('should not set uniqueTrackedEntityAttributeID to cache if option not passed in', async function () {
+      var populatorOptions = {}
+      var populator = await new Populator(populatorOptions);
 
-        requestMock.expects('get').once().withExactArgs(
-          getTrackedEntityAttributeTypeRequest, Sinon.match.func
-        ).yieldsAsync(
-          null, {statusCode: 200}, {
-            valueType: 'number',
-            unique: true
-          }
-        );
-
-        populator._getTrackedEntityAttributeType(trackedEntityAttributeID, function (err) {
-          requestMock.verify();
-          expect(err).to.not.exist;
-          expect(populator._cache.uniqueTrackedEntityAttributeID).to.equal('key3');
-          next();
-        });
-      });
-
-      it('should ignore other unique attributes if uniqueAttributeID option is passed in', function (next) {
-        expect(populator._cache.uniqueTrackedEntityAttributeID).to.not.exist;
-        var trackedEntityAttributeID = 'key1'
-        var getTrackedEntityAttributeTypeRequest = Sinon.match({
-          url: URL.resolve(
-            populatorOptions.url,
-            'api/trackedEntityAttributes/' + trackedEntityAttributeID
-            ),
-          json: true
-        });
-        requestMock.expects('get').once().withExactArgs(
-          getTrackedEntityAttributeTypeRequest, Sinon.match.func
-        ).yieldsAsync(
-          null, {statusCode: 200}, {
-            valueType: 'number',
-            unique: true
-          }
-        );
-
-        populator._getTrackedEntityAttributeType(trackedEntityAttributeID, function (err) {
-          requestMock.verify();
-          expect(err).to.not.exist;
-          expect(populator._cache.uniqueTrackedEntityAttributeID).to.equal('key3');
-          next();
-        });
-      });
+      expect(populator._cache.uniqueTrackedEntityAttributeID).to.not.exist;
     });
   });
 });
