@@ -971,20 +971,21 @@ describe('Populator', function () {
 
 describe('Populator with specified unique tracked entity attribute ID', function () {
   describe('with multiple unique attributes', function () {
-    it('should set specified uniqueTrackedEntityAttributeID to the cache', async function () {
+    it('should set specified uniqueTrackedEntityAttributeID to the cache', function (next) {
       var populatorOptions = {
         uniqueAttributeID: 'key3'
       }
-      var populator = await new Populator(populatorOptions);
-
+      var populator = new Populator(populatorOptions);
       expect(populator._cache.uniqueTrackedEntityAttributeID).to.equal('key3');
+      next();
     });
 
-    it('should not set uniqueTrackedEntityAttributeID to cache if option not passed in', async function () {
+    it('should not set uniqueTrackedEntityAttributeID to cache if option not passed in', function (next) {
       var populatorOptions = {}
-      var populator = await new Populator(populatorOptions);
+      var populator = new Populator(populatorOptions)
 
-      expect(populator._cache.uniqueTrackedEntityAttributeID).to.not.exist;
+      expect(populator._cache.uniqueTrackedEntityAttributeID).to.not.exist
+      next()
     });
   });
 });
