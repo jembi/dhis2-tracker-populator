@@ -5,7 +5,6 @@ var Lab = require('lab');
 var ObjectAssign = require('object-assign');
 var Path = require('path');
 var Populator = require('../lib/populator');
-var Cache = require('../lib/typeCache')
 var Request = require('request');
 var Sinon = require('sinon');
 var SinonChai = require('sinon-chai');
