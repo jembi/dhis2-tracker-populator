@@ -968,6 +968,25 @@ describe('Populator', function () {
   });
 });
 
+describe('Populator with specified unique tracked entity attribute ID with multiple unique attributes', function () {
+  it('should set specified uniqueTrackedEntityAttributeID to the cache', function (next) {
+    var populatorOptions = {
+      uniqueAttributeID: 'key3'
+    };
+    var populator = new Populator(populatorOptions);
+    expect(populator._cache.uniqueTrackedEntityAttributeID).to.equal('key3');
+    next();
+  });
+
+    it('should not set uniqueTrackedEntityAttributeID to cache if option not passed in', function (next) {
+    var populatorOptions = {};
+    var populator = new Populator(populatorOptions);
+
+      expect(populator._cache.uniqueTrackedEntityAttributeID).to.not.exist;
+    next();
+  });
+});
+
 describe('Populator with duplicate stage ID', function () {
   var OPTIONS = {
     url: 'http://localhost/',
