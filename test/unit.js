@@ -746,7 +746,7 @@ describe('Populator', function () {
     describe('with no unique attributes', function () {
 
       before(function (next) {
-        populator._cache.firstUniqueTrackedEntityAttributeID = null;
+        populator._cache.uniqueTrackedEntityAttributeID = null;
         next();
       });
 
@@ -763,12 +763,12 @@ describe('Populator', function () {
       var uniqueAttributeID = Object.keys(ATTRIBUTES)[0];
 
       beforeEach(function (next) {
-        populator._cache.firstUniqueTrackedEntityAttributeID = uniqueAttributeID;
+        populator._cache.uniqueTrackedEntityAttributeID = uniqueAttributeID;
         next();
       });
 
       afterEach(function (next) {
-        populator._cache.firstUniqueTrackedEntityAttributeID = null;
+        populator._cache.uniqueTrackedEntityAttributeID = null;
         next();
       });
 
