@@ -167,7 +167,7 @@ describe('Populator', function () {
       });
     });
 
-    describe('with more than one conflict', function () {
+    describe('with an unknown conflict', function () {
 
       it('should return an error with the correct message', function (next) {
         var response = {
@@ -230,6 +230,56 @@ describe('Populator', function () {
                 conflicts: [{
                   value: 'Non-unique'
                 }]
+              }]
+            }
+          }
+        );
+
+        populator._addTrackedEntity(KNOWN_KEYS, ATTRIBUTES, function (err, returnedTrackedEntityInstanceID) {
+          requestMock.verify();
+          populatorMock.verify();
+          expect(addTrackedEntityResponseListener).to.be.calledWith(response, expectedRequestObject);
+          expect(err).to.not.exist;
+          expect(returnedTrackedEntityInstanceID).to.equal(trackedEntityInstanceID);
+          next();
+        });
+      });
+    });
+
+    describe('with 2 non-unique conflicts', function () {
+      var populatorMock;
+
+      beforeEach(function (next) {
+        populatorMock = sandbox.mock(populator);
+        next();
+      });
+
+      it('should get the tracked entity instance id and update it', function (next) {
+        var trackedEntityInstanceID = 'some tracked entity instance id';
+        populatorMock.expects('_getTrackedEntityInstanceID').once()
+          .withExactArgs(KNOWN_KEYS, ATTRIBUTES, Sinon.match.func)
+          .yieldsAsync(null, trackedEntityInstanceID);
+        populatorMock.expects('_updateTrackedEntityInstance').once()
+          .withExactArgs(KNOWN_KEYS, ATTRIBUTES, trackedEntityInstanceID, Sinon.match.func)
+          .yieldsAsync(null, trackedEntityInstanceID);
+
+        var response = {
+          statusCode: 409
+        };
+        requestMock.expects('post').once().withExactArgs(addTrackedEntityRequest, Sinon.match.func).returns(requestObject).yieldsAsync(
+          null,
+          response, {
+            response: {
+              status: 'ERROR',
+              importSummaries: [{
+                conflicts: [
+                  {
+                    value: 'Non-unique'
+                  },
+                  {
+                    value: 'Non-unique'
+                  }
+                ]
               }]
             }
           }
