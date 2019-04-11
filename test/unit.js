@@ -1028,11 +1028,10 @@ describe('Populator with specified unique tracked entity attribute ID with multi
     next();
   });
 
-    it('should not set uniqueTrackedEntityAttributeID to cache if option not passed in', function (next) {
+  it('should not set uniqueTrackedEntityAttributeID to cache if option not passed in', function (next) {
     var populatorOptions = {};
     var populator = new Populator(populatorOptions);
-
-      expect(populator._cache.uniqueTrackedEntityAttributeID).to.not.exist;
+    expect(populator._cache.uniqueTrackedEntityAttributeID).to.not.exist;
     next();
   });
 });
