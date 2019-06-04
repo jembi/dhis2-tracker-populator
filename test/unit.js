@@ -634,7 +634,8 @@ describe('Populator', function () {
     });
   });
 
-  describe('#checkForDuplicateEvent', function () {
+
+  describe('#checkForDuplicateEventUsingDuplicateThreshold', function () {
     var trackedEntityInstanceID = 'some tracked entity instance id';
 
     var requestObject = {
@@ -687,7 +688,7 @@ describe('Populator', function () {
           }
         );
 
-        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
+        populator._checkForDuplicateEventUsingDuplicateThreshold(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
           requestMock.verify();
           expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
@@ -711,7 +712,7 @@ describe('Populator', function () {
           }
         );
 
-        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
+        populator._checkForDuplicateEventUsingDuplicateThreshold(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
           requestMock.verify();
           expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
@@ -736,7 +737,7 @@ describe('Populator', function () {
           }
         );
 
-        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
+        populator._checkForDuplicateEventUsingDuplicateThreshold(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
           requestMock.verify();
           expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
@@ -780,7 +781,7 @@ describe('Populator', function () {
           eventOrgUnit: eventOrgUnit
         });
 
-        populator._checkForDuplicateEvent(knownKeys, trackedEntityInstanceID, function (err) {
+        populator._checkForDuplicateEventUsingDuplicateThreshold(knownKeys, trackedEntityInstanceID, function (err) {
           requestMock.verify();
           expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
@@ -1127,7 +1128,7 @@ describe('Populator with duplicate stage ID', function () {
           }
         );
 
-        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
+        populator._checkForDuplicateEventUsingDuplicateThreshold(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
           requestMock.verify();
           expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
