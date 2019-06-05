@@ -3,7 +3,6 @@
 var Chai = require('chai');
 var Lab = require('lab');
 var ObjectAssign = require('object-assign');
-var Path = require('path');
 var Populator = require('../lib/populator');
 var Request = require('request');
 var Sinon = require('sinon');
@@ -12,7 +11,6 @@ var URL = require('url');
 
 var lab = exports.lab = Lab.script();
 
-var after = lab.after;
 var afterEach = lab.afterEach;
 var before = lab.before;
 var beforeEach = lab.beforeEach;
