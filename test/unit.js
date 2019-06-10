@@ -1056,7 +1056,7 @@ describe('Populator with specified unique data element ID', function() {
     });
   });
 
-  describe('#checkForDuplicateEventUsingDataElementID', function() {
+  describe('#checkForDuplicateEventUsingDataElementUID', function() {
     var requestMock;
     var sandbox = Sinon.sandbox.create();
     beforeEach(function (next) {
@@ -1112,7 +1112,7 @@ describe('Populator with specified unique data element ID', function() {
       var checkForDuplicateEventResponseListener = sandbox.stub();
       populator.on('checkForDuplicateEventResponse', checkForDuplicateEventResponseListener);
 
-      populator._checkForDuplicateEventUsingDataElementID(dataElements, trackedEntityInstanceID, function (err) {
+      populator._checkForDuplicateEventUsingDataElementUID(dataElements, trackedEntityInstanceID, function (err) {
         requestMock.verify();
         expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
         expect(err).to.exist;
@@ -1138,7 +1138,7 @@ describe('Populator with specified unique data element ID', function() {
 
       var trackedEntityInstanceID = 'TEI ID 123'
 
-      populator._checkForDuplicateEventUsingDataElementID(dataElements, trackedEntityInstanceID, function (err) {
+      populator._checkForDuplicateEventUsingDataElementUID(dataElements, trackedEntityInstanceID, function (err) {
         expect(err).to.exist;
         expect(err.message).to.equal('No Data Element with ID: ' + uniqueDataElementID);
         next();
@@ -1199,7 +1199,7 @@ describe('Populator with specified unique data element ID', function() {
       var checkForDuplicateEventResponseListener = sandbox.stub();
       populator.on('checkForDuplicateEventResponse', checkForDuplicateEventResponseListener);
 
-      populator._checkForDuplicateEventUsingDataElementID(dataElements, trackedEntityInstanceID, function (err) {
+      populator._checkForDuplicateEventUsingDataElementUID(dataElements, trackedEntityInstanceID, function (err) {
         requestMock.verify();
         expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
         expect(err).to.exist;
@@ -1269,7 +1269,7 @@ describe('Populator with specified unique data element ID', function() {
       var checkForDuplicateEventResponseListener = sandbox.stub();
       populator.on('checkForDuplicateEventResponse', checkForDuplicateEventResponseListener);
 
-      populator._checkForDuplicateEventUsingDataElementID(dataElements, trackedEntityInstanceID, function (err, res) {
+      populator._checkForDuplicateEventUsingDataElementUID(dataElements, trackedEntityInstanceID, function (err, res) {
         requestMock.verify();
         expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
         expect(err).to.not.exist;
