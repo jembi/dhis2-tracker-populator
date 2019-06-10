@@ -1037,8 +1037,7 @@ describe('Populator with specified unique tracked entity attribute ID with multi
 describe('Populator with specified unique data element ID', function() {
   describe('#typeCache', function() {
     it('should set specified uniqueDataElement to the cache', function (next) {
-      var populatorOptions =
-      {
+      var populatorOptions = {
         uniqueDataElement: 'data element id'
       };
       var populator = new Populator(populatorOptions);
@@ -1047,7 +1046,7 @@ describe('Populator with specified unique data element ID', function() {
       next();
     })
 
-    it('should not set uniqueTrackedEntityAttributeID to cache if option not passed in', function (next) {
+    it('should not set uniqueDataElement to cache if option not passed in', function (next) {
       var populatorOptions = {};
       var populator = new Populator(populatorOptions);
       expect(populator._cache.uniqueDataElement).to.not.exist;
