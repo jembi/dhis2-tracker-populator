@@ -1140,7 +1140,7 @@ describe('Populator with specified unique data element ID', function() {
 
       populator._checkForDuplicateEventUsingDataElementUID(dataElements, trackedEntityInstanceID, function (err) {
         expect(err).to.exist;
-        expect(err.message).to.equal('No Data Element: ' + uniqueDataElement);
+        expect(err.message).to.equal('No Data Element with UID: ' + uniqueDataElement);
         next();
       });
     });
