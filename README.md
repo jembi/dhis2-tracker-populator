@@ -20,7 +20,7 @@ npm install -g dhis2-tracker-populator
 
 ## CSV file format
 
-The CSV files must follow a naming convention of `programID.programStageID.trackedEntityID.csv`. The values that make up the filename will be used when making requests to the API. These are the uids of the program, stage and trackedentity which can be found using api/resource calls, for example:
+The CSV files must follow a naming convention of `programID.programStageID.trackedEntityID.csv`. The values that make up the filename will be used when making requests to the API. These are the uids of the program, stage and trackedEntity which can be found using api/resource calls, for example:
 
 Program: <https://apps.dhis2.org/demo/api/programs/IpHINAT79UW> (shows attributes)
 
@@ -37,7 +37,7 @@ Any number of additional attributes or data elements can be specified with colum
 * Attributes: The uid of the attribute prepended with the string `A|`.
 * Data elements: The uid of the data element prepended with the string `DE|`.
 * Each line in the CSV corresponds to an event.
-* If the tracked entity exists already (there is a unique attribute), other atrributes will not be updated
+* If the tracked entity exists already (there is a unique attribute), other attributes will not be updated
 * If the tracked entity is already enrolled into the program, the application will continue on to adding the event
 * There is no restriction on the number of events added to a program for a particular tracked entity, and multiple identical events can be added (for example if the same csv file is operated on more than once)
 * The application assumes that there is only one unique attribute per tracked entity (this is determined by the application at run time from the DHIS2 resources api)
@@ -123,7 +123,7 @@ How to do a basic populate into DHIS2 using the `write` function in the `Populat
     node
     ```
 
-1. In the `Node` import the populator module and instantiate a new populator:
+1. In the `Node` shell, import the populator module and instantiate a new populator:
 
     ```javascript
     const Populator = require('./populator');
@@ -142,13 +142,13 @@ How to do a basic populate into DHIS2 using the `write` function in the `Populat
 
     | Populator Option | Description | Example |
     | :---: | :---: | :---: |
-    | url | URL and authentication details to a DHIS2 instance | <https://{user}:{password}@staging.dhis.dhmis.org/momconnect> |
-    | programID | [A DHIS2 Program ID](https://staging.dhis.dhmis.org/momconnect/api/programs) eg: MomConnect, NurseConnect or MalariaConnect Programs | CsKMsVrpRny (MomConnect Program)  |
+    | url | URL and authentication details to a DHIS2 instance | <https://{user}:{password}@staging.dhis.dhmis.org/momconnect/> |
+    | programID | [A DHIS2 Program ID](https://staging.dhis.dhmis.org/momconnect/api/programs) eg: MomConnect, NurseConnect or MalariaConnect Programs | CsKMsVrpRny (MomConnect Program) |
     | stageID | [A DHIS2 Program Stage ID](https://staging.dhis.dhmis.org/momconnect/api/programStages) eg: Clinic Subscription, Message Change, HelpDesk| AVSoW6NZOCD (Public Subscription) |
     | trackedEntityID | [An entity tracked by DHIS2](https://staging.dhis.dhmis.org/momconnect/api/trackedEntities) ie: a mother or nurse in MomConnect | et3hFnvRGtX (Mother Subscription) |
     | uniqueAttributeID<sup>§</sup> | A Tracked Entity Attribute that can be used to uniquely identify a tracked entity instance. For example the [System ID](https://staging.dhis.dhmis.org/momconnect/api/trackedEntityAttributes/HMadXWvPaS4) in the momConnect DHIS2 system is a uuid given to each mother when they sign up | HMadXWvPaS4 |
     | duplicateThreshold<sup>§</sup> | If a similar event is found but it falls outside of the `duplicateThreshold` number of days it won't trigger a **Duplicate Event** error. This option is ignored if the `uniqueDataElementID` is provided as it is far less reliable. | 0 |
-    | uniqueElementID<sup>§</sup> | A Data Element on an `Event` used to prevent duplicate processing of messages eg: In the MomConnect system the [Event ID](https://staging.dhis.dhmis.org/momconnect/api/dataElements/VIXMHChW3mb) is a uuid given to each message from Praekelt to unique identify events. If a message needs to be rerun, data won't be duplicated in DHIS2 if it has already successfully been processed. | VIXMHChW3mb |
+    | uniqueElementID<sup>§</sup> | A Data Element on an `Event` used to prevent duplicate processing of messages eg: In the MomConnect system the [Event ID](https://staging.dhis.dhmis.org/momconnect/api/dataElements/VIXMHChW3mb) is a uuid given to each message from Praekelt to uniquely identify events. If a message needs to be rerun, data won't be duplicated in DHIS2 if it has already successfully been processed. | VIXMHChW3mb |
 
     > **§** optional - defaults to backward compatible functionality if not supplied
 
@@ -177,12 +177,12 @@ How to do a basic populate into DHIS2 using the `write` function in the `Populat
 
     | Populator | Key | Description | Example (String) |
     | :---: | :---: | :---: | :---: |
-    | `Parameter`| orgUnit | [Organisation Unit](https://staging.dhis.dhmis.org/momconnect/api/organisationUnits) (ou) - The facility at which the encounter occured | HxdpS7eL5hZ ( Test Clinic ) |
+    | `Parameter`| orgUnit | [Organisation Unit](https://staging.dhis.dhmis.org/momconnect/api/organisationUnits) (ou) - The facility at which the encounter occurred | HxdpS7eL5hZ ( Test Clinic ) |
     | `Parameter`| programDate | Date of registration in the [DHIS2 Tracker Capture Program](https://docs.dhis2.org/2.27/en/user/html/about_program_maintenance_app.html) | YYYY-MM-DD |
-    | `Parameter`| eventDate | Date that the [DHIS2 Event](https://docs.dhis2.org/2.28/en/developer/html/webapi_events.html) occured | YYYY-MM-DD |
+    | `Parameter`| eventDate | Date that the [DHIS2 Event](https://docs.dhis2.org/2.28/en/developer/html/webapi_events.html) occurred | YYYY-MM-DD |
     | [`Attribute`](https://docs.dhis2.org/2.26/en/developer/html/webapi_tracked_entity_instance_management.html) | [AMwD6ZTkNYJ<sup>‡</sup>](https://staging.dhis.dhmis.org/momconnect/api/trackedEntityAttributes/AMwD6ZTkNYJ) | Mother Subscription Cell Number | +27123456789 |
     | [`Attribute`](https://docs.dhis2.org/2.26/en/developer/html/webapi_tracked_entity_instance_management.html) | [HMadXWvPaS4<sup>‡</sup>](https://staging.dhis.dhmis.org/momconnect/api/trackedEntityAttributes/HMadXWvPaS4) | **System ID** - a uuid generated by Praekelt to uniquely identify a mother instead of by cellphone number | 4afe11af-5c2c-4e83-848f-759ccd0b2e26 |
-    | [`Data Element`](https://docs.dhis2.org/2.25/en/user/html/manage_data_element.html) | [u8qaP9AqGL5<sup>‡</sup>](https://staging.dhis.dhmis.org/momconnect/api/dataElements/u8qaP9AqGL5) | MomConnect Device MSISDN  | +27123456789 |
+    | [`Data Element`](https://docs.dhis2.org/2.25/en/user/html/manage_data_element.html) | [u8qaP9AqGL5<sup>‡</sup>](https://staging.dhis.dhmis.org/momconnect/api/dataElements/u8qaP9AqGL5) | MomConnect Device MSISDN | +27123456789 |
     | [`Data Element`](https://docs.dhis2.org/2.25/en/user/html/manage_data_element.html) | [MxxPNA4C2xZ<sup>‡</sup>](https://staging.dhis.dhmis.org/momconnect/api/dataElements/MxxPNA4C2xZ) | MomConnect Language Preference | en |
     | [`Data Element`](https://docs.dhis2.org/2.25/en/user/html/manage_data_element.html) | [rXkucI2pquj<sup>‡</sup>](https://staging.dhis.dhmis.org/momconnect/api/dataElements/rXkucI2pquj) | [Software Type (SWT)](#software-type-provider) Provider Code | 4 |
     | [`Data Element`](https://docs.dhis2.org/2.25/en/user/html/manage_data_element.html) | [uIEht9XYOWS<sup>‡</sup>](https://staging.dhis.dhmis.org/momconnect/api/dataElements/uIEht9XYOWS) | [Mobile Health Application (MHA)](#mobile-health-application-provider) Provider Code | 1 |
