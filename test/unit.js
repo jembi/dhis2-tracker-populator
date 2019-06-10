@@ -1036,13 +1036,13 @@ describe('Populator with specified unique tracked entity attribute ID with multi
 
 describe('Populator with specified unique data element ID', function() {
   describe('#typeCache', function() {
-    it('should set specified uniqueDataElementID to the cache', function (next) {
+    it('should set specified uniqueDataElement to the cache', function (next) {
       var populatorOptions =
       {
-        uniqueDataElementID: 'data element id'
+        uniqueDataElement: 'data element id'
       };
       var populator = new Populator(populatorOptions);
-      expect(populator._cache.uniqueEventDataElementID).to.equal('data element id');
+      expect(populator._cache.uniqueDataElement).to.equal('data element id');
       expect(populator._options.duplicateThreshold).to.equal(-1)
       next();
     })
@@ -1050,7 +1050,7 @@ describe('Populator with specified unique data element ID', function() {
     it('should not set uniqueTrackedEntityAttributeID to cache if option not passed in', function (next) {
       var populatorOptions = {};
       var populator = new Populator(populatorOptions);
-      expect(populator._cache.uniqueEventDataElementID).to.not.exist;
+      expect(populator._cache.uniqueDataElement).to.not.exist;
       expect(populator._options.duplicateThreshold).to.equal(-1)
       next();
     });
@@ -1070,11 +1070,11 @@ describe('Populator with specified unique data element ID', function() {
     });
 
     it('should return error when DHIS2 sends non-200 response', function (next) {
-      var uniqueDataElementID = 'uniqueID123';
+      var uniqueDataElement = 'uniqueID123';
       var eventUUID = '04ab1f15-f8c7-4cf3-9b80-8a01bd9a92cd';
 
       var populatorOptions = {
-        uniqueDataElementID,
+        uniqueDataElement,
         url: 'http://localhost/',
         programID: 'some program id',
         stageID: 'some stage id',
@@ -1122,10 +1122,10 @@ describe('Populator with specified unique data element ID', function() {
     });
 
     it('should return error when uniqueEventDataElement field not included in the message dataElements', function (next) {
-      var uniqueDataElementID = 'uniqueID123';
+      var uniqueDataElement = 'uniqueID123';
 
       var populatorOptions = {
-        uniqueDataElementID,
+        uniqueDataElement,
         url: 'http://localhost/',
         programID: 'some program id',
         stageID: 'some stage id',
@@ -1140,17 +1140,17 @@ describe('Populator with specified unique data element ID', function() {
 
       populator._checkForDuplicateEventUsingDataElementUID(dataElements, trackedEntityInstanceID, function (err) {
         expect(err).to.exist;
-        expect(err.message).to.equal('No Data Element with ID: ' + uniqueDataElementID);
+        expect(err.message).to.equal('No Data Element: ' + uniqueDataElement);
         next();
       });
     });
 
     it('should return duplicate event error when a duplicate is found', function (next) {
-      var uniqueDataElementID = 'uniqueID123';
+      var uniqueDataElement = 'uniqueID123';
       var eventUUID = '04ab1f15-f8c7-4cf3-9b80-8a01bd9a92cd';
 
       var populatorOptions = {
-        uniqueDataElementID,
+        uniqueDataElement,
         url: 'http://localhost/',
         programID: 'some program id',
         stageID: 'some stage id',
@@ -1181,7 +1181,7 @@ describe('Populator with specified unique data element ID', function() {
             {
               dataValues: [
                 {
-                  dataElement: uniqueDataElementID,
+                  dataElement: uniqueDataElement,
                   value: eventUUID
                 }
               ]
@@ -1205,9 +1205,9 @@ describe('Populator with specified unique data element ID', function() {
         expect(err).to.exist;
         expect(err.message).to.equal(
           'Duplicate Event "'
-          + uniqueDataElementID
+          + uniqueDataElement
           + ' - '
-          + dataElements[uniqueDataElementID]
+          + dataElements[uniqueDataElement]
           + '" for tracked entity instance: '
           + trackedEntityInstanceID
         );
@@ -1216,11 +1216,11 @@ describe('Populator with specified unique data element ID', function() {
     });
 
     it('should not return an error', function (next) {
-      var uniqueDataElementID = 'uniqueID123';
+      var uniqueDataElement = 'uniqueID123';
       var eventUUID = '04ab1f15-f8c7-4cf3-9b80-8a01bd9a92cd';
 
       var populatorOptions = {
-        uniqueDataElementID,
+        uniqueDataElement,
         url: 'http://localhost/',
         programID: 'some program id',
         stageID: 'some stage id',
@@ -1251,7 +1251,7 @@ describe('Populator with specified unique data element ID', function() {
             {
               dataValues: [
                 {
-                  dataElement: uniqueDataElementID,
+                  dataElement: uniqueDataElement,
                   value: 'not the same UUID'
                 }
               ]

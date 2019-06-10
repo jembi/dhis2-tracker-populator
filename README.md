@@ -134,7 +134,7 @@ How to do a basic populate into DHIS2 using the `write` function in the `Populat
       stageID: 'Program Stage UID',
       trackedEntityID: 'Tracked Entity Attribute UID',
       duplicateThreshold: 'An integer (days)',
-      uniqueDataElementID: 'Data Element UID'
+      uniqueDataElement: 'Data Element UID'
     });
     ```
 
@@ -147,7 +147,7 @@ How to do a basic populate into DHIS2 using the `write` function in the `Populat
     | stageID | [A DHIS2 Program Stage ID](https://staging.dhis.dhmis.org/momconnect/api/programStages) eg: Clinic Subscription, Message Change, HelpDesk| AVSoW6NZOCD (Public Subscription) |
     | trackedEntityID | [An entity tracked by DHIS2](https://staging.dhis.dhmis.org/momconnect/api/trackedEntities) ie: a mother or nurse in MomConnect | et3hFnvRGtX (Mother Subscription) |
     | uniqueAttributeID<sup>§</sup> | A Tracked Entity Attribute that can be used to uniquely identify a tracked entity instance. For example the [System ID](https://staging.dhis.dhmis.org/momconnect/api/trackedEntityAttributes/HMadXWvPaS4) in the momConnect DHIS2 system is a uuid given to each mother when they sign up | HMadXWvPaS4 |
-    | duplicateThreshold<sup>§</sup> | If a similar event is found but it falls outside of the `duplicateThreshold` number of days it won't trigger a **Duplicate Event** error. This option is ignored if the `uniqueDataElementID` is provided as it is far less reliable. | 0 ( `-1` disables duplicateThreshold check ) |
+    | duplicateThreshold<sup>§</sup> | If a similar event is found but it falls outside of the `duplicateThreshold` number of days it won't trigger a **Duplicate Event** error. This option is ignored if the `uniqueDataElement` is provided as it is far less reliable. | 0 ( `-1` disables duplicateThreshold check ) |
     | uniqueElementID<sup>§</sup> | A Data Element on an `Event` used to prevent duplicate processing of messages eg: In the MomConnect system the [Event ID](https://staging.dhis.dhmis.org/momconnect/api/dataElements/VIXMHChW3mb) is a uuid given to each message from Praekelt to uniquely identify events. If a message needs to be rerun, data won't be duplicated in DHIS2 if it has already successfully been processed. | VIXMHChW3mb |
 
     > **§** optional - defaults to backward compatible functionality if not supplied
