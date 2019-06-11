@@ -3,7 +3,6 @@
 var Chai = require('chai');
 var Lab = require('lab');
 var ObjectAssign = require('object-assign');
-var Path = require('path');
 var Populator = require('../lib/populator');
 var Request = require('request');
 var Sinon = require('sinon');
@@ -12,7 +11,6 @@ var URL = require('url');
 
 var lab = exports.lab = Lab.script();
 
-var after = lab.after;
 var afterEach = lab.afterEach;
 var before = lab.before;
 var beforeEach = lab.beforeEach;
@@ -634,7 +632,7 @@ describe('Populator', function () {
     });
   });
 
-  describe('#checkForDuplicateEvent', function () {
+  describe('#checkForDuplicateEventUsingDuplicateThreshold', function () {
     var trackedEntityInstanceID = 'some tracked entity instance id';
 
     var requestObject = {
@@ -687,7 +685,7 @@ describe('Populator', function () {
           }
         );
 
-        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
+        populator._checkForDuplicateEventUsingDuplicateThreshold(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
           requestMock.verify();
           expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
@@ -711,7 +709,7 @@ describe('Populator', function () {
           }
         );
 
-        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
+        populator._checkForDuplicateEventUsingDuplicateThreshold(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
           requestMock.verify();
           expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
@@ -736,7 +734,7 @@ describe('Populator', function () {
           }
         );
 
-        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
+        populator._checkForDuplicateEventUsingDuplicateThreshold(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
           requestMock.verify();
           expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
@@ -780,7 +778,7 @@ describe('Populator', function () {
           eventOrgUnit: eventOrgUnit
         });
 
-        populator._checkForDuplicateEvent(knownKeys, trackedEntityInstanceID, function (err) {
+        populator._checkForDuplicateEventUsingDuplicateThreshold(knownKeys, trackedEntityInstanceID, function (err) {
           requestMock.verify();
           expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.exist;
@@ -1036,6 +1034,251 @@ describe('Populator with specified unique tracked entity attribute ID with multi
   });
 });
 
+describe('Populator with specified unique data element ID', function() {
+  describe('#typeCache', function() {
+    it('should set specified uniqueDataElement to the cache', function (next) {
+      var populatorOptions = {
+        uniqueDataElement: 'data element id'
+      };
+      var populator = new Populator(populatorOptions);
+      expect(populator._cache.uniqueDataElement).to.equal('data element id');
+      expect(populator._options.duplicateThreshold).to.equal(-1)
+      next();
+    })
+
+    it('should not set uniqueDataElement to cache if option not passed in', function (next) {
+      var populatorOptions = {};
+      var populator = new Populator(populatorOptions);
+      expect(populator._cache.uniqueDataElement).to.not.exist;
+      expect(populator._options.duplicateThreshold).to.equal(-1)
+      next();
+    });
+  });
+
+  describe('#checkForDuplicateEventUsingDataElementUID', function() {
+    var requestMock;
+    var sandbox = Sinon.sandbox.create();
+    beforeEach(function (next) {
+      requestMock = sandbox.mock(Request);
+      next();
+    });
+
+    afterEach(function (next) {
+      sandbox.restore();
+      next();
+    });
+
+    it('should return error when DHIS2 sends non-200 response', function (next) {
+      var uniqueDataElement = 'uniqueID123';
+      var eventUUID = '04ab1f15-f8c7-4cf3-9b80-8a01bd9a92cd';
+
+      var populatorOptions = {
+        uniqueDataElement,
+        url: 'http://localhost/',
+        programID: 'some program id',
+        stageID: 'some stage id',
+        trackedEntityID: 'some tracked entity id'
+      };
+      var populator = new Populator(populatorOptions);
+
+      var response = {
+        statusCode: 500
+      };
+
+      var requestObject = {
+        method: 'GET',
+        path: '/api/events',
+      };
+
+      var expectedRequestObject = Sinon.match({
+        method: requestObject.method,
+        path: requestObject.path,
+        timestamp: Sinon.match.number
+      });
+
+      requestMock.expects('get').once().returns(requestObject).yieldsAsync(
+        null, {
+          statusCode: 500
+        }
+      );
+
+      var dataElements = {
+        uniqueID123: eventUUID
+      }
+
+      var trackedEntityInstanceID = 'TEI ID 123'
+
+      var checkForDuplicateEventResponseListener = sandbox.stub();
+      populator.on('checkForDuplicateEventResponse', checkForDuplicateEventResponseListener);
+
+      populator._checkForDuplicateEventUsingDataElementUID(dataElements, trackedEntityInstanceID, function (err) {
+        requestMock.verify();
+        expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
+        expect(err).to.exist;
+        expect(err.message).to.equal('Unexpected status code 500');
+        next();
+      });
+    });
+
+    it('should return error when uniqueEventDataElement field not included in the message dataElements', function (next) {
+      var uniqueDataElement = 'uniqueID123';
+
+      var populatorOptions = {
+        uniqueDataElement,
+        url: 'http://localhost/',
+        programID: 'some program id',
+        stageID: 'some stage id',
+        trackedEntityID: 'some tracked entity id'
+      };
+      var populator = new Populator(populatorOptions);
+
+      // no unique data element included
+      var dataElements = {}
+
+      var trackedEntityInstanceID = 'TEI ID 123'
+
+      populator._checkForDuplicateEventUsingDataElementUID(dataElements, trackedEntityInstanceID, function (err) {
+        expect(err).to.exist;
+        expect(err.message).to.equal('No Data Element with UID: ' + uniqueDataElement);
+        next();
+      });
+    });
+
+    it('should return duplicate event error when a duplicate is found', function (next) {
+      var uniqueDataElement = 'uniqueID123';
+      var eventUUID = '04ab1f15-f8c7-4cf3-9b80-8a01bd9a92cd';
+
+      var populatorOptions = {
+        uniqueDataElement,
+        url: 'http://localhost/',
+        programID: 'some program id',
+        stageID: 'some stage id',
+        trackedEntityID: 'some tracked entity id'
+      };
+      var populator = new Populator(populatorOptions);
+
+      var response = {
+        statusCode: 200
+      };
+
+      var requestObject = {
+        method: 'GET',
+        path: '/api/events',
+      };
+
+      var expectedRequestObject = Sinon.match({
+        method: requestObject.method,
+        path: requestObject.path,
+        timestamp: Sinon.match.number
+      });
+
+      requestMock.expects('get').once().returns(requestObject).yieldsAsync(
+        null, {
+          statusCode: 200
+        }, {
+          events: [
+            {
+              dataValues: [
+                {
+                  dataElement: uniqueDataElement,
+                  value: eventUUID
+                }
+              ]
+            }
+          ]
+        }
+      );
+
+      var dataElements = {
+        uniqueID123: eventUUID
+      }
+
+      var trackedEntityInstanceID = 'TEI ID 123'
+
+      var checkForDuplicateEventResponseListener = sandbox.stub();
+      populator.on('checkForDuplicateEventResponse', checkForDuplicateEventResponseListener);
+
+      populator._checkForDuplicateEventUsingDataElementUID(dataElements, trackedEntityInstanceID, function (err) {
+        requestMock.verify();
+        expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
+        expect(err).to.exist;
+        expect(err.message).to.equal(
+          'Duplicate Event "'
+          + uniqueDataElement
+          + ' - '
+          + dataElements[uniqueDataElement]
+          + '" for tracked entity instance: '
+          + trackedEntityInstanceID
+        );
+        next();
+      });
+    });
+
+    it('should not return an error', function (next) {
+      var uniqueDataElement = 'uniqueID123';
+      var eventUUID = '04ab1f15-f8c7-4cf3-9b80-8a01bd9a92cd';
+
+      var populatorOptions = {
+        uniqueDataElement,
+        url: 'http://localhost/',
+        programID: 'some program id',
+        stageID: 'some stage id',
+        trackedEntityID: 'some tracked entity id'
+      };
+      var populator = new Populator(populatorOptions);
+
+      var response = {
+        statusCode: 200
+      };
+
+      var requestObject = {
+        method: 'GET',
+        path: '/api/events',
+      };
+
+      var expectedRequestObject = Sinon.match({
+        method: requestObject.method,
+        path: requestObject.path,
+        timestamp: Sinon.match.number
+      });
+
+      requestMock.expects('get').once().returns(requestObject).yieldsAsync(
+        null, {
+          statusCode: 200
+        }, {
+          events: [
+            {
+              dataValues: [
+                {
+                  dataElement: uniqueDataElement,
+                  value: 'not the same UUID'
+                }
+              ]
+            }
+          ]
+        }
+      );
+
+      var dataElements = {
+        uniqueID123: eventUUID
+      }
+
+      var trackedEntityInstanceID = 'TEI ID 123'
+
+      var checkForDuplicateEventResponseListener = sandbox.stub();
+      populator.on('checkForDuplicateEventResponse', checkForDuplicateEventResponseListener);
+
+      populator._checkForDuplicateEventUsingDataElementUID(dataElements, trackedEntityInstanceID, function (err, res) {
+        requestMock.verify();
+        expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
+        expect(err).to.not.exist;
+        expect(res).to.equal(trackedEntityInstanceID)
+        next();
+      });
+    });
+  });
+});
+
 describe('Populator with duplicate stage ID', function () {
   var OPTIONS = {
     url: 'http://localhost/',
@@ -1127,7 +1370,7 @@ describe('Populator with duplicate stage ID', function () {
           }
         );
 
-        populator._checkForDuplicateEvent(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
+        populator._checkForDuplicateEventUsingDuplicateThreshold(KNOWN_KEYS, trackedEntityInstanceID, function (err) {
           requestMock.verify();
           expect(checkForDuplicateEventResponseListener).to.be.calledWith(response, expectedRequestObject);
           expect(err).to.not.exist;
