@@ -23,7 +23,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "lab": "^14.3.4",
-    "object-assign": "^2.0.0",
+    "object-assign": "^4.0.0",
     "sinon": "^1.12.1",
     "sinon-chai": "^2.6.0"
   }
