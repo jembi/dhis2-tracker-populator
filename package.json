@@ -15,13 +15,13 @@
   "dependencies": {
     "async": "^2.6.2",
     "csv-parse": "4.4.5",
-    "minimist": "^1.1.0",
-    "moment": "^2.9.0",
-    "request": "^2.49.0",
-    "winston": "^0.8.3"
+    "minimist": "^1.2.0",
+    "moment": "^2.24.0",
+    "request": "^2.88.0",
+    "winston": "^2.4.0"
   },
   "devDependencies": {
-    "chai": "^1.10.0",
+    "chai": "^4.2.0",
     "lab": "^14.3.4",
     "object-assign": "^2.0.0",
     "sinon": "^1.12.1",
