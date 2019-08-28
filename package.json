@@ -1,6 +1,6 @@
 {
   "name": "dhis2-tracker-populator",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "main": "./lib/populator.js",
   "bin": "./bin/index.js",
   "preferGlobal": true,
@@ -13,18 +13,18 @@
     "cover": "lab -r html -o coverage.html"
   },
   "dependencies": {
-    "async": "^0.9.0",
-    "csv-parse": "0.0.6",
-    "minimist": "^1.1.0",
-    "moment": "^2.9.0",
-    "request": "^2.49.0",
-    "winston": "^0.8.3"
+    "async": "^2.6.2",
+    "csv-parse": "4.4.5",
+    "minimist": "^1.2.0",
+    "moment": "^2.24.0",
+    "request": "^2.88.0",
+    "winston": "^2.0.0"
   },
   "devDependencies": {
-    "chai": "^1.10.0",
+    "chai": "^4.2.0",
     "lab": "^14.3.4",
-    "object-assign": "^2.0.0",
-    "sinon": "^1.12.1",
-    "sinon-chai": "^2.6.0"
+    "object-assign": "^4.0.0",
+    "sinon": "^7.4.1",
+    "sinon-chai": "^3.3.0"
   }
 }
