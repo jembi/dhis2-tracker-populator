@@ -25,6 +25,6 @@
     "lab": "^14.3.4",
     "object-assign": "^4.0.0",
     "sinon": "^7.4.1",
-    "sinon-chai": "^2.6.0"
+    "sinon-chai": "^3.3.0"
   }
 }
