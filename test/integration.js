@@ -76,7 +76,7 @@ describe('Tracker populator', function () {
       var addTrackedEntityRequest = Sinon.match({
         url: URL.resolve(options.url, 'api/trackedEntityInstances'),
         json: Sinon.match({
-          trackedEntity: 'trackedEntityID',
+          trackedEntityType: 'trackedEntityID',
           orgUnit: 'expectedOrgUnit',
           attributes: Sinon.match([
             Sinon.match({
