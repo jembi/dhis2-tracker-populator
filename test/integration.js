@@ -1,6 +1,5 @@
 'use strict';
 
-var Chai = require('chai');
 var Lab = require('lab');
 var Path = require('path');
 var Request = require('request');
@@ -10,13 +9,10 @@ var URL = require('url');
 
 var lab = exports.lab = Lab.script();
 
-var after = lab.after;
 var afterEach = lab.afterEach;
 var beforeEach = lab.beforeEach;
 var describe = lab.describe;
 var it = lab.it;
-
-var expect = Chai.expect;
 
 var fixturePath = Path.join(__dirname, 'fixtures');
 var options = {
