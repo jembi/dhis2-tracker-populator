@@ -13,7 +13,7 @@
     "cover": "lab -r html -o coverage.html"
   },
   "dependencies": {
-    "async": "^2.6.2",
+    "async": "^2.6.4",
     "csv-parse": "4.4.5",
     "minimist": "^1.2.0",
     "moment": "^2.24.0",
